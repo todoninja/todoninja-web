@@ -40,3 +40,21 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+  deploy:
+    environment: production
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+      - |
+        echo "
+        images: [{name: depends-on-environment, newName: ghcr.io/todoninja/todoninja-web:main}]" >> infrastructure/kubernetes/environments/preview/kustomization.yaml
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 actions-example-k8s-1-18
+      - name: Deploy to DigitalOcean Kubernetes
+        run: kubectl apply -k infrastructure/kubernetes/environments/preview.yml

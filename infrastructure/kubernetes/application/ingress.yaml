@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - app.parchment.todoninja.de
+        - app.parchment.ocean.dkdmerch.de
       secretName: letsencrypt-prod
   rules:
-    - host: app.parchment.todoninja.de
+    - host: app.parchment.ocean.dkdmerch.de
       http:
         paths:
           - path: /

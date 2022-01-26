@@ -13,6 +13,5 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 16
-      - run: cd code
-      - run: npm ci
-      - run: npm run build
+      - run: cd code && npm ci
+      - run: cd code && npm run build

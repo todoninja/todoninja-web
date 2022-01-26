@@ -17,6 +17,7 @@
     "dependencies": {
         "@opaquejs/opaque": "^0.19.4",
         "uuid": "^8.3.2",
-        "vue": "^3.2.29"
+        "vue": "^3.2.29",
+        "vue-router": "^4.0.12"
     }
 }

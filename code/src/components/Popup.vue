@@ -19,7 +19,8 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref } from '@vue/reactivity'
+import { reactive } from '@vue/reactivity'
+
 export default {
     emits: ['close'],
     setup(props, context) {

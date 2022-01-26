@@ -1,0 +1,8 @@
+bases:
+  - ../preview
+
+patchesJson6902:
+  - target:
+      kind: Ingress
+      name: todoninja-app
+    path: url-patch.yaml

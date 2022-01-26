@@ -7,6 +7,7 @@
     "devDependencies": {
         "@snowpack/plugin-postcss": "^1.4.3",
         "@snowpack/plugin-vue": "^2.6.2",
+        "@types/uuid": "^8.3.4",
         "autoprefixer": "^10.4.2",
         "postcss": "^8.4.5",
         "prettier": "^2.5.1",
@@ -14,7 +15,8 @@
         "tailwindcss": "^3.0.15"
     },
     "dependencies": {
-        "@opaquejs/opaque": "^0.19.2",
+        "@opaquejs/opaque": "^0.19.4",
+        "uuid": "^8.3.2",
         "vue": "^3.2.29"
     }
 }

@@ -5,6 +5,7 @@ import {
     PrimaryKeyValue,
 } from '@opaquejs/opaque/lib/contracts/ModelContracts'
 import { AdapterInterface, OpaqueTableInterface } from '@opaquejs/opaque'
+import { v4 } from 'uuid'
 
 class Collection {
     map: Map<PrimaryKeyValue, OpaqueAttributes>

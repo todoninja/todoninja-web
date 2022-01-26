@@ -1,9 +1,7 @@
 <template>
-    <div class="m-8 mt-0 mb-32">
+    <div v-if="ready" class="m-8 mt-0 mb-32">
         <horizontal-scrolling class="-mx-8">
-            <div
-                class="mt-8 mx-8 mb-16 flex flex-row items-center justify-center"
-            >
+            <div class="mt-8 mx-8 mb-16 flex flex-row items-center justify-center">
                 <div
                     @click="currentList = list.id"
                     v-for="list of lists"
@@ -18,39 +16,31 @@
                     <div class="whitespace-nowrap">{{ list.name }}</div>
                     <popup v-if="list.id == currentList">
                         <template v-slot:trigger="{ open }">
-                            <i
-                                @click="open"
-                                class="hero dots-vertical solid text-xs text-blue-700 ml-2"
-                            ></i>
+                            <i @click="open" class="hero dots-vertical solid text-xs text-blue-700 ml-2"></i>
                         </template>
                         <template v-slot:content> name </template>
                     </popup>
                 </div>
                 <popup @close="resetNewList">
                     <template v-slot:trigger="{ open }">
-                        <i
-                            @click="open"
-                            class="hero plus solid text-gray-400 text-xl"
-                        ></i>
+                        <i @click="open" class="hero plus solid text-gray-400 text-xl"></i>
                     </template>
                     <template v-slot:content="{ close }">
-                        <label
-                            for="name"
-                            class="block text-sm font-medium text-slate-700"
-                        >
-                            Name
-                        </label>
+                        <label for="name" class="block text-sm font-medium text-slate-700"> Name </label>
                         <input
                             id="name"
                             type="text"
-                            class="input-base"
+                            class="input-base mt-1"
                             v-model="newList.name"
                             autofocus
                             @keydown.enter="createListClick() && close()"
                         />
-                        <div
-                            class="flex flex-row items-center justify-end mt-4"
-                        >
+                        <label for="name" class="block text-sm font-medium text-slate-700"> Backend </label>
+                        <select v-model="newList.backend" class="mt-1 input-base">
+                            <option value="InMemory">In Memory</option>
+                            <option value="LocalStorage">Local Storage</option>
+                        </select>
+                        <div class="flex flex-row items-center justify-end mt-4">
                             <div
                                 @click="createListClick() && close()"
                                 class="rounded bg-blue-100 text-blue-900 font-bold px-4 py-2 text-sm"
@@ -64,10 +54,7 @@
         </horizontal-scrolling>
         <transition-group tag="div" class="max-w-2xl mx-auto" name="flip-list">
             <task-item v-for="task of tasks" :key="task.id" :task="task" />
-            <div
-                key="new"
-                class="grid grid-cols-[auto_1fr_auto] gap-4 items-center mb-4"
-            >
+            <div key="new" class="grid grid-cols-[auto_1fr_auto] gap-4 items-center mb-4">
                 <i
                     class="hero solid plus"
                     :class="{
@@ -91,41 +78,30 @@
                 >
                 </i>
             </div>
-            <div @click="showDone = !showDone" class="mb-4" key="toggle">
-                <div
-                    v-if="!showDone"
-                    class="flex flex-row items-center text-sm text-gray-500 mt-8"
-                >
+            <div v-if="doneTasks?.length > 0" @click="showDone = !showDone" class="mb-4" key="toggle">
+                <div v-if="!showDone" class="flex flex-row items-center text-sm text-gray-500 mt-8">
                     <i class="hero chevron-right solid mr-2"></i>
                     Show done tasks
                 </div>
-                <div
-                    v-else
-                    class="flex flex-row items-center text-sm text-gray-500 mt-8"
-                >
+                <div v-else class="flex flex-row items-center text-sm text-gray-500 mt-8">
                     <i class="hero chevron-down solid mr-2"></i>
                     Hide done tasks
                 </div>
             </div>
-            <task-item
-                v-for="task of showDone ? doneTasks : []"
-                :key="task.id"
-                :task="task"
-            />
+            <task-item v-for="task of showDone ? doneTasks : []" :key="task.id" :task="task" />
         </transition-group>
     </div>
 </template>
 
 <script lang="ts">
-import { computed, reactive, ref, shallowReactive } from '@vue/runtime-core'
+import { computed, reactive, ref, watchEffect } from '@vue/runtime-core'
 import { Task } from './models/Task'
 import { asyncRef } from './asyncRef'
 import TaskItem from './TaskItem.vue'
 import { focusedTask } from './globals'
-import { List } from './models/List'
+import { InMemoryList, List, LocalStorageList } from './models/List'
 import Popup from './Popup.vue'
 import HorizontalScrolling from './HorizontalScrolling.vue'
-import { AutoMap } from './helpers'
 
 export default {
     components: {
@@ -135,25 +111,14 @@ export default {
     },
     setup() {
         const currentList = ref(null)
-        const list = asyncRef(
-            async () => (await List.find(currentList.value)) || List.default()
-        )
-        const tasks = asyncRef(async () =>
-            list.value?.tasks().query().where('done', false).get()
-        )
-        const doneTasks = asyncRef(async () =>
-            list.value?.tasks().query().where('done', true).get()
-        )
-        const newTasks = new AutoMap<number, Task>((id) =>
-            Task.make({ listId: id })
-        )
-        const newTask = computed(() => newTasks.get(currentList))
-        const newList = ref(List.make())
+        const list = asyncRef(async () => (await List.find(currentList.value)) || List.default())
+        const tasks = asyncRef(async () => list.value?.tasks().query().where('done', false).get())
+        const doneTasks = asyncRef(async () => list.value?.tasks().query().where('done', true).get())
+        const newTask = ref<Task | null>(null)
+        watchEffect(() => (newTask.value = list.value?.tasks().make({})))
+        const newList = reactive({ name: '', backend: 'LocalStorage' })
         const showDone = ref(false)
-        const lists = asyncRef(async () => [
-            List.default(),
-            ...(await List.all()),
-        ])
+        const lists = asyncRef(async () => [List.default(), ...(await List.all())])
 
         return {
             tasks,
@@ -164,19 +129,25 @@ export default {
             lists,
             newList,
             focused: focusedTask,
+            ready: computed(() => list.value != undefined),
             async createClick() {
-                await newTask.value.save()
-                newTasks.reset(currentList)
+                await newTask.value?.save()
+                newTask.value = list.value?.tasks().make()
             },
-            async resetNewTask() {
-                newTasks.reset(currentList)
+            resetNewTask() {
+                newTask.value = list.value?.tasks().make()
             },
             async createListClick() {
-                await newList.value.save()
-                newList.value = List.make()
+                const { backend, ...attrs } = newList
+                if (backend == 'LocalStorage') {
+                    await LocalStorageList.create(attrs)
+                } else if (backend == 'InMemory') {
+                    await InMemoryList.create(attrs)
+                }
+                newList.name = ''
             },
             async resetNewList() {
-                newList.value = List.make()
+                newList.name = ''
             },
             timeout: (callback, time) => setTimeout(callback, time),
         }

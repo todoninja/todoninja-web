@@ -21,7 +21,8 @@
 <script lang="ts">
 import { reactive, ref } from '@vue/reactivity'
 export default {
-    setup() {
+    emits: ['close'],
+    setup(props, context) {
         const state = reactive({
             open: false,
         })
@@ -32,6 +33,7 @@ export default {
             },
             close() {
                 state.open = false
+                context.emit('close')
             },
         }
     },

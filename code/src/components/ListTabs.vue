@@ -14,7 +14,7 @@
                 <i class="hero light-bulb solid outline mr-2"></i>
                 <div class="whitespace-nowrap">{{ list.name }}</div>
             </div>
-            <popup @close="resetClick">
+            <popup @close="resetClick" @open="popupOpens()">
                 <template v-slot:trigger="{ open }">
                     <i @click="open" class="hero plus solid text-gray-400 text-xl"></i>
                 </template>
@@ -25,10 +25,10 @@
                         type="text"
                         class="input-base mt-1"
                         v-model="newList.name"
-                        autofocus
                         @keydown.enter="createClick().then(() => close())"
+                        ref="nameInput"
                     />
-                    <label for="name" class="block text-sm font-medium text-slate-700">Backend</label>
+                    <label for="name" class="block text-sm font-medium text-slate-700 mt-4">Backend</label>
                     <select v-model="newList.backend" class="mt-1 input-base">
                         <option value="InMemory">In Memory</option>
                         <option value="LocalStorage">Local Storage</option>
@@ -48,11 +48,12 @@
 </template>
 
 <script lang="ts">
-import { reactive } from '@vue/reactivity'
+import { reactive, ref } from '@vue/reactivity'
 import Popup from './Popup.vue'
 import { asyncRef } from '../asyncRef'
 import { InMemoryList, List, LocalStorageList } from '../models/List'
 import HorizontalScrolling from './HorizontalScrolling.vue'
+import { nextTick } from '@vue/runtime-core'
 export default {
     components: { Popup, HorizontalScrolling },
     emits: ['input'],
@@ -68,10 +69,12 @@ export default {
         const resetNewList = () => {
             newList.name = ''
         }
+        const nameInput = ref<HTMLInputElement | null>(null)
 
         return {
             lists,
             newList,
+            nameInput,
             async createClick() {
                 const { backend, ...attrs } = newList
                 if (backend == 'LocalStorage') {
@@ -82,6 +85,11 @@ export default {
                 resetNewList()
             },
             resetClick: resetNewList,
+            popupOpens() {
+                nextTick(() => {
+                    nameInput.value?.focus()
+                })
+            },
         }
     },
 }

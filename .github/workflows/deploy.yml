@@ -2,8 +2,6 @@ name: Deploy to Kubernetes
 
 on:
   push:
-    branches:
-      - main
     tags:
       - v*
 
@@ -54,7 +52,7 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: |
           echo "
-          images: [{name: depends-on-environment, newName: ghcr.io/todoninja/todoninja-web:main}]" >> infrastructure/kubernetes/environments/preview/kustomization.yaml
+          images: [{name: depends-on-environment, newName: ghcr.io/todoninja/todoninja-web:${{ github.ref_name }}}]" >> infrastructure/kubernetes/environments/preview/kustomization.yaml
       - name: Save DigitalOcean kubeconfig with short-lived credentials
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 todoninja-cluster
       - name: Deploy to DigitalOcean Kubernetes

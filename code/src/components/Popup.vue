@@ -36,6 +36,8 @@ export default {
             close() {
                 state.open = false
                 context.emit('close')
+                // return promise that resolves after the popup has disappeared
+                return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))
             },
         }
     },

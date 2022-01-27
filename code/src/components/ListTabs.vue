@@ -1,22 +1,21 @@
 <template>
     <horizontal-scrolling>
         <div class="flex flex-row items-center justify-center">
-            <div
-                @click="$emit('input', list.id)"
-                v-for="list of lists"
-                :key="list.id"
-                class="px-4 py-2 rounded font-semibold text-sm mr-2 flex flex-row items-center transition-colors"
-                :class="{
-                    'bg-blue-100 text-blue-900': list.id == value,
-                    'text-gray-800 bg-white': list.id != value,
-                }"
-            >
-                <i class="hero light-bulb solid outline mr-2"></i>
-                <div class="whitespace-nowrap">{{ list.name }}</div>
-            </div>
-            <popup @close="resetClick" @open="popupOpens()">
+            <popup v-for="list of lists" :key="list.id">
                 <template v-slot:trigger="{ open }">
-                    <i @click="open" class="hero plus solid text-gray-400 text-xl"></i>
+                    <div
+                        v-longpressable
+                        @longpress="list.id != null && open()"
+                        @click="$emit('input', list.id)"
+                        class="px-4 py-2 rounded font-semibold text-sm mr-2 flex flex-row items-center transition-colors"
+                        :class="{
+                            'bg-blue-100 text-blue-900': list.id == value,
+                            'text-gray-800 bg-white': list.id != value,
+                        }"
+                    >
+                        <div>{{ list.icon() }}</div>
+                        <div class="whitespace-nowrap ml-2">{{ list.nameWithoutIcon() }}</div>
+                    </div>
                 </template>
                 <template v-slot:content="{ close }">
                     <label for="name" class="block text-sm font-medium text-slate-700"> Name </label>
@@ -24,10 +23,68 @@
                         id="name"
                         type="text"
                         class="input-base mt-1"
-                        v-model="newList.name"
-                        @keydown.enter="createClick().then(() => close())"
-                        ref="nameInput"
+                        v-model="list.name"
+                        @keydown.enter="list.save().then(() => close())"
                     />
+                    <div class="flex flex-row items-center justify-between mt-4">
+                        <popup>
+                            <template v-slot:trigger="{ open }">
+                                <i
+                                    @click="open"
+                                    class="hero trash outline text-red-500 py-2 px-4 bg-gray-100 rounded"
+                                ></i>
+                            </template>
+                            <template v-slot:content="{ close: closeConfirmation }">
+                                Do you really want to delete List
+                                <b>{{ list.name }}</b> ?
+                                <div class="flex flex-row items-center justify-between mt-4">
+                                    <div
+                                        @click="closeConfirmation()"
+                                        class="rounded bg-gray-100 text-gray-900 font-bold px-4 py-2 text-sm"
+                                    >
+                                        Cancel
+                                    </div>
+                                    <div
+                                        @click="
+                                            closeConfirmation()
+                                                .then(() => close())
+                                                .then(() => list.delete())
+                                        "
+                                        class="rounded bg-red-100 text-red-900 font-bold px-4 py-2 text-sm"
+                                    >
+                                        <i class="hero trash outline"></i>
+                                        Delete
+                                    </div>
+                                </div>
+                            </template>
+                        </popup>
+                        <div
+                            @click="list.save().then(() => close())"
+                            class="rounded bg-blue-100 text-blue-900 font-bold px-4 py-2 text-sm"
+                        >
+                            Save
+                        </div>
+                    </div>
+                </template>
+            </popup>
+            <popup @close="resetClick" @open="popupOpens()">
+                <template v-slot:trigger="{ open }">
+                    <i @click="open" class="hero plus solid text-gray-400 text-xl"></i>
+                </template>
+                <template v-slot:content="{ close }">
+                    <div class="grid grid-cols-[auto_1fr] gap-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-slate-700"> Name </label>
+                            <input
+                                id="name"
+                                type="text"
+                                class="input-base mt-1"
+                                v-model="newList.name"
+                                @keydown.enter="createClick().then(() => close())"
+                                ref="nameInput"
+                            />
+                        </div>
+                    </div>
                     <label for="name" class="block text-sm font-medium text-slate-700 mt-4">Backend</label>
                     <select v-model="newList.backend" class="mt-1 input-base">
                         <option value="InMemory">In Memory</option>
@@ -64,10 +121,11 @@ export default {
         },
     },
     setup(props: { value: number | null }, context) {
-        const newList = reactive({ name: '', backend: 'LocalStorage' })
+        const newList = reactive({ name: '', icon: undefined, backend: 'LocalStorage' })
         const lists = asyncRef(async () => [List.default(), ...(await List.all())])
         const resetNewList = () => {
             newList.name = ''
+            newList.icon = undefined
         }
         const nameInput = ref<HTMLInputElement | null>(null)
 
@@ -89,6 +147,9 @@ export default {
                 nextTick(() => {
                     nameInput.value?.focus()
                 })
+            },
+            log(...args) {
+                console.log(...args)
             },
         }
     },

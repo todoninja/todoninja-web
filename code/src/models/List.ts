@@ -25,6 +25,17 @@ export class List extends BaseModel {
     public static default() {
         return LocalStorageList.make({ id: null, name: 'Default' })
     }
+
+    public icon() {
+        return (
+            this.name.match(
+                /^\p{Extended_Pictographic}(\u200D\p{Extended_Pictographic}\u200D\p{Extended_Pictographic})*/u
+            )?.[0] || ''
+        )
+    }
+    public nameWithoutIcon() {
+        return this.name.slice(this.icon().length).trim()
+    }
 }
 
 // Returns instances of the correct child class instead of the generic parent class

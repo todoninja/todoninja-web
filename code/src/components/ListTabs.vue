@@ -7,10 +7,10 @@
                         v-longpressable
                         @longpress="list.id != null && open()"
                         @click="$emit('input', list.id)"
-                        class="px-4 py-2 rounded font-semibold text-sm mr-2 flex flex-row items-center transition-colors"
+                        class="px-4 py-2 rounded font-semibold text-sm mr-2 flex flex-row items-center transition-colors clickable"
                         :class="{
                             'bg-blue-100 text-blue-900': list.id == value,
-                            'text-gray-800 bg-white': list.id != value,
+                            'text-gray-800 ': list.id != value,
                         }"
                     >
                         <div v-if="list.icon()" class="mr-2">{{ list.icon() }}</div>

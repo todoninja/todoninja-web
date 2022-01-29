@@ -1,58 +1,48 @@
-import { OpaqueAttributes, OpaqueRowInterface } from "@opaquejs/opaque/lib/contracts/ModelContracts";
-import { watch, reactive, markRaw, isReactive } from "vue";
+import { OpaqueAttributes, OpaqueRowInterface } from '@opaquejs/opaque/lib/contracts/ModelContracts'
+import { watch, reactive, markRaw, isReactive } from 'vue'
 
-export let noReactivity: boolean = false;
-
-export const vueModel = <
-  T extends (new (...args: any[]) => OpaqueRowInterface) & {
-    $deserialize: (data: OpaqueAttributes) => OpaqueAttributes;
-  }
->(
-  base: T
-) =>
-  class VueReactiveModel extends base {
-    public static $deserialized: Map<OpaqueAttributes, OpaqueAttributes> = new Map();
-
-    constructor(...args: any[]) {
-      super();
-      this.$ensureReactivity();
-      markRaw(this);
+export class ReactiveMap<K, V extends object> extends Map<K, V> {
+    constructor(iterable: Iterable<readonly [K, V]> | readonly [readonly [K, V]] | undefined) {
+        super(iterable)
+        return reactive(this)
     }
 
-    static $deserialize(data: OpaqueAttributes) {
-      if (!isReactive(data)) {
-        return super.$deserialize(data);
-      }
-      if (!this.$deserialized.has(data)) {
-        this.$deserialized.set(data, reactive({}));
-        watch(
-          data,
-          value => {
-            Object.assign(this.$deserialized.get(data), super.$deserialize(value));
-          },
-          { immediate: true }
-        );
-      }
-      return this.$deserialized.get(data)!;
+    set(key: K, value: V) {
+        super.set(key, reactive(value) as V)
+        return this
     }
+}
 
-    static $fromRow<Model extends new () => VueReactiveModel>(
-      this: Model,
-      data: OpaqueAttributes,
-      options: any
-    ): InstanceType<Model> {
-      noReactivity = true;
-      // @ts-ignore
-      const ret = super.$fromRow(data, options);
-      noReactivity = false;
-      ret.$ensureReactivity();
-      return ret;
-    }
+const deserialized = new Map<OpaqueAttributes, OpaqueAttributes>()
 
-    $ensureReactivity(): this {
-      if (!noReactivity) {
-        this.$attributes.chain = reactive(this.$attributes.chain);
-      }
-      return this;
+interface VueModellable {
+    new (...args: any[]): OpaqueRowInterface
+    $deserialize: (data: OpaqueAttributes) => OpaqueAttributes
+}
+
+export const vueModel = <T extends VueModellable>(base: T): T =>
+    class VueReactiveModel extends base {
+        // public static $deserialized: Map<OpaqueAttributes, OpaqueAttributes> = new Map()
+        constructor(...args: any[]) {
+            super(...args)
+            this.$ensureReactivity()
+            markRaw(this)
+        }
+
+        static $deserialize(data: OpaqueAttributes) {
+            if (!isReactive(data)) {
+                return super.$deserialize(data)
+            }
+            if (!deserialized.has(data)) {
+                deserialized.set(data, reactive({}))
+                watch(data, (value) => Object.assign(deserialized.get(data), super.$deserialize(data)), {
+                    immediate: true,
+                })
+            }
+            return deserialized.get(data)
+        }
+        $ensureReactivity(): this {
+            this.$attributes.chain = reactive(this.$attributes.chain)
+            return this
+        }
     }
-  };

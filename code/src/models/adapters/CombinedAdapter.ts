@@ -8,17 +8,19 @@ export class CombinedAdapter implements AdapterInterface {
         model: OpaqueTableInterface,
         query: NormalizedQuery<Record<string, unknown>>
     ): Promise<OpaqueAttributes[]> {
-        return await (
-            await Promise.all(
-                Array.from(this.adapters.entries()).map(([model, adapter]) =>
-                    adapter
-                        .read(model, query)
-                        .then((attributesarray) =>
-                            attributesarray.map((attributes) => ({ ...attributes, __combined_source: model }))
-                        )
-                )
-            )
-        ).flat()
+        const sources = Array.from(this.adapters.entries())
+        const results = await Promise.all(
+            sources.map(async ([model, adapter]) => {
+                const adapterresults = await adapter.read(model, query)
+
+                if (model.$instanceForSource === true) {
+                    return adapterresults.map((attributes) => ({ attributes, __combined_source: true, model }))
+                }
+
+                return adapterresults
+            })
+        )
+        return results.flat()
     }
 
     insert(model: OpaqueTableInterface, data: OpaqueAttributes): Promise<OpaqueAttributes | PrimaryKeyValue> {

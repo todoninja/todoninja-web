@@ -1,18 +1,12 @@
 import { QueryEngine } from '@opaquejs/query-engine'
 import { NormalizedQuery } from '@opaquejs/query'
-import {
-    OpaqueAttributes,
-    PrimaryKeyValue,
-} from '@opaquejs/opaque/lib/contracts/ModelContracts'
+import { OpaqueAttributes, PrimaryKeyValue } from '@opaquejs/opaque/lib/contracts/ModelContracts'
 import { AdapterInterface, OpaqueTableInterface } from '@opaquejs/opaque'
 import { v4 } from 'uuid'
 
 class Collection {
     map: Map<PrimaryKeyValue, OpaqueAttributes>
-    constructor(
-        public model: OpaqueTableInterface,
-        public engine: QueryEngine
-    ) {
+    constructor(public model: OpaqueTableInterface, public engine: QueryEngine) {
         this.map = new Map(JSON.parse(localStorage.getItem(model.name) || '[]'))
     }
     insertOrUpdate(items: OpaqueAttributes[]) {
@@ -21,10 +15,7 @@ class Collection {
             if (!this.map.has(pk)) this.map.set(pk, {})
             Object.assign(this.map.get(pk), item)
         }
-        localStorage.setItem(
-            this.model.name,
-            JSON.stringify([...this.map.entries()])
-        )
+        localStorage.setItem(this.model.name, JSON.stringify([...this.map.entries()]))
     }
 
     query(query: NormalizedQuery) {
@@ -55,16 +46,10 @@ export class LocalStorageAdapter implements AdapterInterface {
     }
     async insert(model: OpaqueTableInterface, data: OpaqueAttributes) {
         const pk = Math.floor(Math.random() * 1000000)
-        this.storage
-            .get(model)
-            .insertOrUpdate([{ ...data, [model.primaryKey]: pk }])
+        this.storage.get(model).insertOrUpdate([{ ...data, [model.primaryKey]: pk }])
         return this.storage.get(model).map.get(pk)!
     }
-    async update(
-        model: OpaqueTableInterface,
-        query: NormalizedQuery,
-        data: OpaqueAttributes
-    ) {
+    async update(model: OpaqueTableInterface, query: NormalizedQuery, data: OpaqueAttributes) {
         this.storage.get(model).insertOrUpdate(
             this.storage
                 .get(model)
@@ -79,14 +64,7 @@ export class LocalStorageAdapter implements AdapterInterface {
         this.storage
             .get(model)
             .query(query)
-            .forEach((item) =>
-                this.storage
-                    .get(model)
-                    .map.delete(item[model.primaryKey] as PrimaryKeyValue)
-            )
-        localStorage.setItem(
-            model.name,
-            JSON.stringify([...this.storage.get(model).map.entries()])
-        )
+            .forEach((item) => this.storage.get(model).map.delete(item[model.primaryKey] as PrimaryKeyValue))
+        localStorage.setItem(model.name, JSON.stringify([...this.storage.get(model).map.entries()]))
     }
 }

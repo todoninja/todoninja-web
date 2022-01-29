@@ -33,9 +33,16 @@
                             </div>
                             <div class="border-t h-4 w-[calc(100%+8rem)] -mx-8 mt-8"></div>
                             <div class="flex flex-row items-center justify-center -mb-4 text-sm text-gray-700">
-                                <div>Impress</div>
+                                <a
+                                    href="https://github.com/todoninja/todoninja-web"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Github
+                                    <i class="hero external-link solid"></i>
+                                </a>
                                 <div class="mx-4">&bull;</div>
-                                <div>Privacy Policy</div>
+                                <router-link to="/privacypolicy" class="clickable">Privacy Policy</router-link>
                             </div>
                         </template>
                     </popup>

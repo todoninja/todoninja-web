@@ -4,7 +4,8 @@
         <div
             v-if="state.open"
             @click.stop="close"
-            class="fixed top-0 left-0 right-0 bottom-0 backdrop-blur-md bg-black/10 z-50"
+            class="fixed top-0 left-0 right-0 bottom-0 backdrop-blur-md z-50"
+            style="background: linear-gradient(to bottom, rgb(255 255 255 / 1), rgb(0 0 0 / 0.1) 8rem)"
         ></div>
     </transition>
     <transition name="popup-content">

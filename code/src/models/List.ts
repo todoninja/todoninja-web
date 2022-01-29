@@ -1,9 +1,10 @@
 import { attribute } from '@opaquejs/opaque'
 import { HasManyRelationContract } from '@opaquejs/opaque/lib/contracts/ModelContracts'
-import { reactive } from 'vue'
+import { reactive, ReactiveEffect } from 'vue'
 import { CombinedAdapter } from './adapters/CombinedAdapter'
 import { BaseModel, inMemoryAdapter, instanceForSource, localStorageAdapter } from './Base'
 import { InMemoryTask, LocalStorageTask, Task } from './Task'
+import { ReactiveMap } from './VueModel'
 
 export class List extends BaseModel {
     @attribute({ primaryKey: true })
@@ -51,5 +52,7 @@ List.adapter = new CombinedAdapter(
 )
 
 // Make reactive for vue
-localStorageAdapter.storage.get(LocalStorageList).map = reactive(localStorageAdapter.storage.get(LocalStorageList).map)
-inMemoryAdapter.storage.get(InMemoryList).map = reactive(inMemoryAdapter.storage.get(InMemoryList).map)
+localStorageAdapter.storage.get(LocalStorageList).map = new ReactiveMap(
+    localStorageAdapter.storage.get(LocalStorageList).map
+)
+inMemoryAdapter.storage.get(InMemoryList).map = new ReactiveMap(inMemoryAdapter.storage.get(InMemoryList).map)

@@ -1,4 +1,4 @@
-import { attribute, OpaqueModel, OpaqueTableInterface, OpaqueRow } from '@opaquejs/opaque'
+import { attribute, OpaqueModel, OpaqueTableInterface, OpaqueTable } from '@opaquejs/opaque'
 import {
     AttributeOptionsContract,
     ModelAttributes,
@@ -6,14 +6,19 @@ import {
 } from '@opaquejs/opaque/lib/contracts/ModelContracts'
 import { InMemoryAdapter } from '@opaquejs/opaque/lib/InMemoryAdapter'
 import { QueryEngine } from '@opaquejs/query-engine'
+import { ComparisonTypes } from '@opaquejs/query'
 import { DateTime } from 'luxon'
 import { LocalStorageAdapter } from './adapters/LocalStorage'
 import { vueModel } from './VueModel'
 import { DateTimeComparator } from './extensions/DateTimeComparator'
+import { QueryBuilderModifier, QueryBuilderContract } from '@opaquejs/opaque/lib/contracts/QueryBuilderContracts'
 
 export class BaseModel extends vueModel(OpaqueModel) {
     update(data: Partial<ModelAttributes<this>>): Promise<this> {
         return this.$setAndSaveAttributes(data)
+    }
+    static scope<This extends OpaqueTable>(this: This, modifier: QueryBuilderModifier<QueryBuilderContract<This>>) {
+        return modifier
     }
 }
 
@@ -23,18 +28,19 @@ export const queryEngine = new QueryEngine({
     },
 })
 
+// export const localStorageAdapter = new LocalStorageAdapter(model => new AutoMap(model => new Backend()).get(model))
 export const localStorageAdapter = new LocalStorageAdapter(queryEngine)
 export const inMemoryAdapter = new InMemoryAdapter(queryEngine)
 
 export function instanceForSource<T extends OpaqueTableInterface>(cls: T) {
     cls.$instanceForSource = true
     const oldFromRow = cls.$fromRow
-    cls.$fromRow = function (data?: OpaqueAttributes, options?: any) {
-        if (data.__combined_source === true) {
+    cls.$fromRow = function (data?: OpaqueAttributes) {
+        if (data?.__combined_source === true) {
             // @ts-ignore
-            return data.model.$fromRow(data.attributes, options)
+            return data.model.$fromRow(data.attributes)
         }
-        return oldFromRow.call(this, data, options)
+        return oldFromRow.call(this, data)
     }
 }
 

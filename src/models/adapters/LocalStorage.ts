@@ -2,7 +2,6 @@ import { QueryEngine } from '@opaquejs/query-engine'
 import { NormalizedQuery } from '@opaquejs/query'
 import { OpaqueAttributes, PrimaryKeyValue } from '@opaquejs/opaque/lib/contracts/ModelContracts'
 import { AdapterInterface, OpaqueTableInterface } from '@opaquejs/opaque'
-import { v4 } from 'uuid'
 
 class Collection {
     map: Map<PrimaryKeyValue, OpaqueAttributes>
@@ -23,14 +22,15 @@ class Collection {
     }
 }
 
-class AutoMap<K, V> {
-    map: Map<K, V> = new Map()
-    constructor(public resolver: (key: K) => V) {}
+class AutoMap<K, V> extends Map<K, V> {
+    constructor(public resolver: (key: K) => V) {
+        super()
+    }
     get(key: K) {
-        if (!this.map.has(key)) {
-            this.map.set(key, this.resolver(key))
+        if (!this.has(key)) {
+            this.set(key, this.resolver(key))
         }
-        return this.map.get(key)!
+        return super.get(key)!
     }
 }
 

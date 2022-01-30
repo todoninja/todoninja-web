@@ -29,5 +29,4 @@ router.afterEach((to, from) => {
         history.splice(found)
     }
     history.push(to)
-    console.log(history.map((r) => r.fullPath))
 })

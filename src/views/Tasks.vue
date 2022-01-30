@@ -75,14 +75,14 @@ import NewTaskItem from '../components/NewTaskItem.vue'
 import ListTabs from '../components/ListTabs.vue'
 import Popup from '../components/Popup.vue'
 import AccountPopup from '../components/AccountPopup.vue'
-import { Task } from '../models/Task'
+import { doneScope, nowScope, Task, upcomingScope } from '../models/Task'
 import { AutoMap } from '../helpers'
 import { DateTime } from 'luxon'
 
 const groupTasks = (tasks: Task[]) => {
     const grouped = new AutoMap<string, Task[]>(() => [])
     for (const task of tasks) {
-        grouped.get(task.postponedUntil?.toISODate()).push(task)
+        grouped.get(task.postponedUntil!.toISODate()).push(task)
     }
     return new Map(Array.from(grouped.entries()).map(([datestring, tasks]) => [DateTime.fromISO(datestring), tasks]))
 }
@@ -97,42 +97,26 @@ export default {
     },
     setup() {
         const selectedListId = ref(null)
-        const list = asyncRef(async () => (await List.find(selectedListId.value)) || List.default())
-        const nowTasks = asyncRef(
-            async () =>
-                list.value
-                    ?.tasks()
-                    .query()
-                    .where('done', false)
-                    .where((query) =>
-                        query.where('postponedUntil', null).orWhere('postponedUntil', '<=', DateTime.now().endOf('day'))
-                    )
-                    .get(),
-            []
-        )
+        const list = asyncRef(async () => {
+            if (selectedListId.value == null) {
+                return List.default()
+            }
+            return (await List.find(selectedListId.value)) || List.default()
+        })
+        const nowTasks = asyncRef(async () => list.value?.tasks().query().where(nowScope).get() || ([] as Task[]), [])
         const upcomingTasks = asyncRef(
             async () =>
-                list.value
-                    ?.tasks()
-                    .query()
-                    .where('done', false)
-                    .andWhere('postponedUntil', '>', DateTime.now().endOf('day'))
-                    .get(),
+                list.value?.tasks().query().where(upcomingScope).orderBy('postponedUntil', 'asc').get() ||
+                ([] as Task[]),
             []
         )
-        const groupedUpcomingTasks = computed(() =>
-            Array.from(groupTasks(upcomingTasks.value || []).entries())
-                .sort()
-                .map(([index, tasks]) => [index, tasks])
-        )
-        const doneTasks = asyncRef(async () => list.value?.tasks().query().where('done', true).get())
+        const groupedUpcomingTasks = computed(() => groupTasks(upcomingTasks.value))
+        const doneTasks = asyncRef(async () => list.value?.tasks().query().where(doneScope).get())
         const showDone = ref(false)
         const showPostponed = ref(false)
         const taskitems = new Map()
-
-        console.log(taskitems)
-
-        const focusTask = (id) => (taskitems.has(id) ? taskitems.get(id).focus() : setTimeout(() => focusTask(id), 0))
+        const focusTask = (id: any): any =>
+            taskitems.has(id) ? taskitems.get(id).focus() : setTimeout(() => focusTask(id), 0)
 
         return {
             nowTasks,
@@ -144,12 +128,12 @@ export default {
             focused: focusedTask,
             taskitems,
             newTaskClick: async () => {
+                if (!list.value) return
                 const task = await list.value?.tasks().create({ title: '' })
                 focusTask(task.id)
             },
             list,
             ready: computed(() => list.value != undefined),
-            log: (...args) => console.log(...args),
         }
     },
 }

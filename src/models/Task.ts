@@ -7,7 +7,7 @@ import { DateTime } from 'luxon'
 
 export class Task extends BaseModel {
     @attribute({ primaryKey: true })
-    public id: string
+    public id: string = ''
 
     @attribute()
     public title: string = ''
@@ -25,6 +25,19 @@ export class Task extends BaseModel {
         return this.belongsTo(List)
     }
 }
+
+export const doneScope = Task.scope((query) => query.where('done', true))
+export const undoneScope = Task.scope((query) => query.where('done', false))
+export const upcomingScope = Task.scope((query) =>
+    query.where(undoneScope).andWhere('postponedUntil', '>', DateTime.now().endOf('day'))
+)
+export const nowScope = Task.scope((query) =>
+    query
+        .where(undoneScope)
+        .andWhere((query) =>
+            query.where('postponedUntil', null).orWhere('postponedUntil', '<=', DateTime.now().endOf('day'))
+        )
+)
 
 instanceForSource(Task)
 

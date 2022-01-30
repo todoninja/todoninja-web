@@ -1,7 +1,7 @@
 # build environment
 FROM node:16-alpine as build
 RUN mkdir /app
-COPY infrastructure /app
+COPY ./ /app
 WORKDIR /app
 RUN npm ci
 RUN ls

@@ -44,7 +44,14 @@ export default defineComponent({
             }
             return null
         }
-        const isOpen = computed(() => router.currentRoute.value.query.popups?.includes(props.id) || false)
+        const getCurrentPopups = () => {
+            const popups = router.currentRoute.value.query.popups
+            if (popups == undefined) {
+                return []
+            }
+            return typeof popups == 'string' ? [popups] : popups
+        }
+        const isOpen = computed(() => getCurrentPopups().includes(props.id) || false)
         const close = () => {
             if (!isOpen.value) return Promise.resolve()
             const lastWithout = getLastRouteWithoutPopup()
@@ -59,7 +66,7 @@ export default defineComponent({
                 ...router.currentRoute.value,
                 query: {
                     ...router.currentRoute.value.query,
-                    popups: [...(router.currentRoute.value.query.popups || []), props.id],
+                    popups: [...getCurrentPopups(), props.id],
                 },
             })
             return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))

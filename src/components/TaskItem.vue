@@ -14,7 +14,7 @@
                 </div>
             </template>
             <template v-slot:content="{ close }">
-                <div class="grid grid-cols-[auto_1fr] gap-4 items-center mb-4">
+                <div class="grid grid-cols-[auto_1fr_auto] gap-4 items-center mb-4">
                     <done-checkbox :value="task.done" @input="task.update({ done: $event })" />
                     <input
                         type="text"
@@ -24,6 +24,50 @@
                         @keyup.enter="close()"
                         ref="input"
                     />
+                    <popup :id="`task-options-${task.id}`">
+                        <template v-slot:trigger="{ open }">
+                            <i @click="open" class="hero dots-vertical outline p-4 -m-4 clickable-bg rounded-full"></i>
+                        </template>
+                        <template v-slot:content="{ close: closeOptions }">
+                            <div class="-my-4">
+                                <popup :id="`task-delete-${task.id}`">
+                                    <template v-slot:trigger="{ open }">
+                                        <div
+                                            class="flex flex-row items-center text-red-500 -mx-8 px-8 py-4 clickable-bg"
+                                            @click="open"
+                                        >
+                                            <i class="hero trash solid"></i>
+                                            <div class="ml-8">Delete</div>
+                                        </div>
+                                    </template>
+                                    <template v-slot:content="{ close: closeConfirmation }">
+                                        Do you really want to delete the task "<b>{{ task.title }}</b
+                                        >"?
+                                        <div class="flex flex-row items-center justify-between mt-4">
+                                            <div
+                                                @click="close()"
+                                                class="rounded bg-gray-100 text-gray-900 font-bold px-4 py-2 text-sm"
+                                            >
+                                                Cancel
+                                            </div>
+                                            <div
+                                                @click="
+                                                    closeConfirmation()
+                                                        .then(() => closeOptions())
+                                                        .then(() => close())
+                                                        .then(() => deleteClick())
+                                                "
+                                                class="rounded bg-red-100 text-red-900 font-bold px-4 py-2 text-sm"
+                                            >
+                                                <i class="hero trash outline"></i>
+                                                Delete
+                                            </div>
+                                        </div>
+                                    </template>
+                                </popup>
+                            </div>
+                        </template>
+                    </popup>
                 </div>
                 <div class="flex flex-row items-center mt-4">
                     <popup :id="`task-detail-${task.id}-postpone-picker`">
@@ -107,7 +151,7 @@ export default {
             log: console.log,
             input,
             focus() {
-                popup.value.open().then(() => input.value.focus())
+                popup.value?.open().then(() => input.value?.focus())
             },
         }
     },

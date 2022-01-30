@@ -53,7 +53,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
 }
-.clickable-bg:hover {
+.clickable-bg:active {
     animation-name: clickable-bg-circle, clickable-bg-fadeout;
     animation-duration: 150ms, 150ms;
     animation-delay: 0ms, 150ms;
@@ -80,7 +80,7 @@ body {
 .clickable-bg-blue {
     @apply clickable;
 }
-.clickable-bg-blue:hover {
+.clickable-bg-blue:active {
     animation: clickable-bg-circle-blue 150ms ease-out;
 }
 @keyframes clickable-bg-circle-blue {

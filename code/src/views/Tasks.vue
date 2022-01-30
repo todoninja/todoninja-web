@@ -1,51 +1,60 @@
 <template>
-    <div v-if="ready" class="mx-8 mb-32">
+    <div v-if="ready" class="mx-8 mb-32 min-h-screen grid grid-rows-[auto_1fr]">
         <div
             class="grid grid-cols-[1fr_auto] sticky top-0 left-0 right-0 bg-gradient-to-b from-white via-white/20 to-white/20 backdrop-blur-md py-4 -mx-8 px-8 z-20"
         >
             <list-tabs :value="selectedListId" @input="selectedListId = $event" class="-ml-8 px-8 pr-16" />
             <account-popup class="z-10" />
         </div>
-        <transition-group tag="div" class="max-w-2xl mx-auto mt-4" name="flip-list">
-            <task-item v-for="task of nowTasks" :key="task.id" :task="task" :ref="(el) => taskitems.set(task.id, el)" />
-            <div
-                v-if="groupedPostponedTasks?.length > 0"
-                @click="showPostponed = !showPostponed"
-                class="mb-4"
-                key="upcomingtoggle"
-            >
-                <div v-if="!showPostponed" class="flex flex-row items-center text-sm text-gray-500 mt-8">
-                    <i class="hero chevron-right solid mr-2"></i>
-                    Show upcoming tasks
+        <transition-group tag="div" name="flip-list" class="mt-4 grid grid-rows-[1fr_auto]">
+            <transition-group name="flip-list" tag="div" key="now">
+                <task-item
+                    v-for="task of nowTasks"
+                    :key="task.id"
+                    :task="task"
+                    :ref="(el) => taskitems.set(task.id, el)"
+                />
+            </transition-group>
+            <transition-group name="flip-list" tag="div" key="other">
+                <div
+                    v-if="groupedPostponedTasks?.length > 0"
+                    @click="showPostponed = !showPostponed"
+                    class="mb-4"
+                    key="upcomingtoggle"
+                >
+                    <div v-if="!showPostponed" class="flex flex-row items-center text-sm text-gray-500 mt-8 mb-8">
+                        <i class="hero chevron-right solid mr-2"></i>
+                        Show upcoming tasks
+                    </div>
+                    <div v-else class="flex flex-row items-center text-sm text-gray-500 mt-8">
+                        <i class="hero chevron-down solid mr-2"></i>
+                        Hide upcoming tasks
+                    </div>
                 </div>
-                <div v-else class="flex flex-row items-center text-sm text-gray-500 mt-8">
-                    <i class="hero chevron-down solid mr-2"></i>
-                    Hide upcoming tasks
+                <template v-for="[index, group] of showPostponed ? groupedPostponedTasks : []">
+                    <div class="mb-2 text-sm mt-8 text-gray-500" :key="index?.toISODate?.()">
+                        {{
+                            index.toLocaleString({
+                                weekday: 'short',
+                                month: 'short',
+                                day: '2-digit',
+                            })
+                        }}
+                    </div>
+                    <task-item v-for="task of group" :key="task.id" :task="task" />
+                </template>
+                <div v-if="doneTasks?.length > 0" @click="showDone = !showDone" class="mb-4" key="donetoggle">
+                    <div v-if="!showDone" class="flex flex-row items-center text-sm text-gray-500 mt-8 mb-8">
+                        <i class="hero chevron-right solid mr-2"></i>
+                        Show done tasks
+                    </div>
+                    <div v-else class="flex flex-row items-center text-sm text-gray-500 mt-8">
+                        <i class="hero chevron-down solid mr-2"></i>
+                        Hide done tasks
+                    </div>
                 </div>
-            </div>
-            <template v-for="[index, group] of showPostponed ? groupedPostponedTasks : []">
-                <div class="mb-2 text-sm mt-8 text-gray-500" :key="index?.toISODate?.()">
-                    {{
-                        index.toLocaleString({
-                            weekday: 'short',
-                            month: 'short',
-                            day: '2-digit',
-                        })
-                    }}
-                </div>
-                <task-item v-for="task of group" :key="task.id" :task="task" />
-            </template>
-            <div v-if="doneTasks?.length > 0" @click="showDone = !showDone" class="mb-4" key="donetoggle">
-                <div v-if="!showDone" class="flex flex-row items-center text-sm text-gray-500 mt-8">
-                    <i class="hero chevron-right solid mr-2"></i>
-                    Show done tasks
-                </div>
-                <div v-else class="flex flex-row items-center text-sm text-gray-500 mt-8">
-                    <i class="hero chevron-down solid mr-2"></i>
-                    Hide done tasks
-                </div>
-            </div>
-            <task-item v-for="task of showDone ? doneTasks : []" :key="task.id" :task="task" />
+                <task-item v-for="task of showDone ? doneTasks : []" :key="task.id" :task="task" />
+            </transition-group>
         </transition-group>
         <div
             @click="newTaskClick"

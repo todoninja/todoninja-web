@@ -5,6 +5,7 @@ import { InMemoryTask, LocalStorageTask, Task } from './models/Task'
 import { router } from './router'
 import 'lit-datetime-picker'
 import { DateTime } from 'luxon'
+import { register } from 'register-service-worker'
 
 createApp(App)
     .use(router)
@@ -41,3 +42,7 @@ window.LList = LocalStorageList
 window.MList = InMemoryList
 window.List = List
 window.DateTime = DateTime
+
+if (import.meta.env.MODE === 'production') {
+    register(`/service-worker.js`)
+}

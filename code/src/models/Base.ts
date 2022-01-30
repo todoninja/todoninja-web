@@ -1,7 +1,12 @@
-import { OpaqueModel, OpaqueTableInterface } from '@opaquejs/opaque'
-import { OpaqueAttributes } from '@opaquejs/opaque/lib/contracts/ModelContracts'
+import { attribute, OpaqueModel, OpaqueTableInterface, OpaqueRow } from '@opaquejs/opaque'
+import {
+    AttributeOptionsContract,
+    ModelAttributes,
+    OpaqueAttributes,
+} from '@opaquejs/opaque/lib/contracts/ModelContracts'
 import { InMemoryAdapter } from '@opaquejs/opaque/lib/InMemoryAdapter'
 import { QueryEngine } from '@opaquejs/query-engine'
+import { DateTime } from 'luxon'
 import { LocalStorageAdapter } from './adapters/LocalStorage'
 import { vueModel } from './VueModel'
 
@@ -21,3 +26,9 @@ export function instanceForSource<T extends OpaqueTableInterface>(cls: T) {
         return oldFromRow.call(this, data, options)
     }
 }
+
+export const date = <Type>(options: Partial<AttributeOptionsContract<Type>> = {}) =>
+    attribute({
+        get: ((value: string) => (value ? DateTime.fromISO(value) : value)) as any,
+        set: ((value: DateTime | null) => (value instanceof DateTime ? value.toISODate() : value)) as any,
+    })

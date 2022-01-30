@@ -16,6 +16,8 @@
     },
     "dependencies": {
         "@opaquejs/opaque": "^0.19.4",
+        "lit-datetime-picker": "^1.1.0",
+        "luxon": "^2.3.0",
         "uuid": "^8.3.2",
         "vue": "^3.2.29",
         "vue-router": "^4.0.12"

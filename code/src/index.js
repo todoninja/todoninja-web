@@ -3,6 +3,7 @@ import App from './App.vue'
 import { InMemoryList, List, LocalStorageList } from './models/List'
 import { InMemoryTask, LocalStorageTask, Task } from './models/Task'
 import { router } from './router'
+import 'lit-datetime-picker'
 
 createApp(App)
     .use(router)

@@ -1,7 +1,11 @@
 <template>
     <popup>
         <template v-slot:trigger="{ open }">
-            <div @click="open" class="bg-blue-100 rounded-full h-8 w-8 flex flex-row items-center justify-center">
+            <div
+                v-bind="$attrs"
+                @click="open"
+                class="bg-blue-100 rounded-full h-8 w-8 flex flex-row items-center justify-center"
+            >
                 <i class="hero user outline text-lg text-blue-500"></i>
             </div>
         </template>

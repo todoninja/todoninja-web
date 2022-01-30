@@ -1,5 +1,5 @@
 <template>
-    <horizontal-scrolling>
+    <horizontal-scrolling class="fadescroll">
         <div class="flex flex-row items-center justify-center">
             <popup v-for="list of lists" :key="list.id">
                 <template v-slot:trigger="{ open }">
@@ -105,3 +105,9 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.fadescroll {
+    mask-image: linear-gradient(to right, black 80%, transparent 98%);
+}
+</style>

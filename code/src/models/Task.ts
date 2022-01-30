@@ -1,8 +1,9 @@
 import { attribute } from '@opaquejs/opaque'
-import { BaseModel, inMemoryAdapter, instanceForSource, localStorageAdapter } from './Base'
+import { BaseModel, date, inMemoryAdapter, instanceForSource, localStorageAdapter } from './Base'
 import { List } from './List'
 import { CombinedAdapter } from './adapters/CombinedAdapter'
 import { ReactiveMap } from './VueModel'
+import { DateTime } from 'luxon'
 
 export class Task extends BaseModel {
     @attribute({ primaryKey: true })
@@ -15,7 +16,10 @@ export class Task extends BaseModel {
     public done: boolean = false
 
     @attribute()
-    public listId: number | undefined
+    public listId: number | null = null
+
+    @date()
+    public postponedUntil: DateTime | null = null
 
     list() {
         return this.belongsTo(List)

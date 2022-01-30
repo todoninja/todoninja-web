@@ -1,47 +1,28 @@
 <template>
     <div>
-        <popup>
+        <popup ref="popup" :id="`task-detail-${task.id}`">
             <template v-slot:trigger="{ open }">
-                <div
-                    v-bind="$attrs"
-                    v-longpressable
-                    @longpress="open"
-                    class="grid grid-cols-[auto_1fr_auto] gap-4 items-center mb-4"
-                >
-                    <div @click="doneClick()">
-                        <div v-if="!task.done" class="w-4 h-4 border-2 border-gray-800 rounded"></div>
-                        <div
-                            v-else
-                            class="w-4 h-4 border-2 border-green-600 rounded bg-green-600 flex flex-row items-center justify-center"
-                        >
-                            <i class="hero solid check text-white"></i>
-                        </div>
+                <div v-bind="$attrs" @click="open" class="grid grid-cols-[auto_1fr_auto] gap-4 items-center mb-4">
+                    <done-checkbox :value="task.done" @input="task.update({ done: $event })" />
+                    <div>
+                        {{ task.title }}
                     </div>
+                </div>
+            </template>
+            <template v-slot:content="{ close }">
+                <div class="grid grid-cols-[auto_1fr] gap-4 items-center mb-4">
+                    <done-checkbox :value="task.done" @input="task.update({ done: $event })" />
                     <input
                         type="text"
                         :value="task.title"
                         @focus="focused = task.id"
                         @input="taskInput($event)"
-                        class="peer"
+                        @keyup.enter="close()"
+                        ref="input"
                     />
-                    <i v-show="focused == task.id" @click="deleteClick()" class="hero solid x text-gray-500"></i>
-                </div>
-            </template>
-            <template v-slot:content>
-                <div class="grid grid-cols-[auto_1fr] gap-4 items-center mb-4">
-                    <div @click="doneClick()">
-                        <div v-if="!task.done" class="w-4 h-4 border-2 border-gray-800 rounded"></div>
-                        <div
-                            v-else
-                            class="w-4 h-4 border-2 border-green-600 rounded bg-green-600 flex flex-row items-center justify-center"
-                        >
-                            <i class="hero solid check text-white"></i>
-                        </div>
-                    </div>
-                    <input type="text" :value="task.title" @focus="focused = task.id" @input="taskInput($event)" />
                 </div>
                 <div class="flex flex-row items-center mt-4">
-                    <popup>
+                    <popup :id="`task-detail-${task.id}-postpone-picker`">
                         <template v-slot:trigger="{ open }">
                             <div @click="open" class="rounded-full border px-3 py-1 text-sm flex flex-row items-center">
                                 <i class="hero chevron-double-right text-blue-500 outline mr-2"></i>
@@ -84,8 +65,10 @@ import { DateTime } from 'luxon'
 import { focusedTask } from '../globals'
 import { Task } from '../models/Task'
 import Popup from './Popup.vue'
+import { ref } from '@vue/reactivity'
+import DoneCheckbox from './DoneCheckbox.vue'
 export default {
-    components: { Popup },
+    components: { Popup, DoneCheckbox },
     props: {
         task: {
             type: Task,
@@ -93,7 +76,10 @@ export default {
         },
     },
     setup(props) {
+        const input = ref<HTMLInputElement | null>(null)
+        const popup = ref<typeof Popup | null>(null)
         return {
+            popup,
             focused: focusedTask,
             async deleteClick() {
                 await props.task.delete()
@@ -112,6 +98,10 @@ export default {
                 return DateTime.fromJSDate(date)
             },
             log: console.log,
+            input,
+            focus() {
+                popup.value.open().then(() => input.value.focus())
+            },
         }
     },
 }

@@ -1,7 +1,7 @@
 <template>
     <horizontal-scrolling class="fadescroll">
         <div class="flex flex-row items-center justify-center">
-            <popup v-for="list of lists" :key="list.id">
+            <popup v-for="list of lists" :key="list.id" :id="`edit-list-${list.id}`">
                 <template v-slot:trigger="{ open }">
                     <div
                         v-longpressable
@@ -21,7 +21,7 @@
                     <edit-list-form :listId="list.id" @save="close()" @delete="close()" />
                 </template>
             </popup>
-            <popup @close="resetClick" @open="popupOpens()">
+            <popup @close="resetClick" @open="popupOpens()" id="new-list">
                 <template v-slot:trigger="{ open }">
                     <i @click="open" class="hero plus solid text-gray-400 text-xl"></i>
                 </template>

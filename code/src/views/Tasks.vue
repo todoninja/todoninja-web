@@ -7,13 +7,12 @@
             <account-popup class="z-10" />
         </div>
         <transition-group tag="div" class="max-w-2xl mx-auto mt-4" name="flip-list">
-            <task-item v-for="task of nowTasks" :key="task.id" :task="task" />
-            <new-task-item :list="list" key="new" />
+            <task-item v-for="task of nowTasks" :key="task.id" :task="task" :ref="(el) => taskitems.set(task.id, el)" />
             <div
                 v-if="groupedPostponedTasks?.length > 0"
                 @click="showPostponed = !showPostponed"
                 class="mb-4"
-                key="donetoggle"
+                key="upcomingtoggle"
             >
                 <div v-if="!showPostponed" class="flex flex-row items-center text-sm text-gray-500 mt-8">
                     <i class="hero chevron-right solid mr-2"></i>
@@ -24,20 +23,18 @@
                     Hide upcoming tasks
                 </div>
             </div>
-            <div v-for="[index, group] of showPostponed ? groupedPostponedTasks : []" :key="index?.toISODate?.()">
-                <div class="mb-2 text-sm mt-8 text-gray-500">
+            <template v-for="[index, group] of showPostponed ? groupedPostponedTasks : []">
+                <div class="mb-2 text-sm mt-8 text-gray-500" :key="index?.toISODate?.()">
                     {{
                         index.toLocaleString({
                             weekday: 'short',
                             month: 'short',
                             day: '2-digit',
-                        }) || 'now'
+                        })
                     }}
                 </div>
-                <transition-group name="flip-list">
-                    <task-item v-for="task of group" :key="task.id" :task="task" />
-                </transition-group>
-            </div>
+                <task-item v-for="task of group" :key="task.id" :task="task" />
+            </template>
             <div v-if="doneTasks?.length > 0" @click="showDone = !showDone" class="mb-4" key="donetoggle">
                 <div v-if="!showDone" class="flex flex-row items-center text-sm text-gray-500 mt-8">
                     <i class="hero chevron-right solid mr-2"></i>
@@ -50,11 +47,17 @@
             </div>
             <task-item v-for="task of showDone ? doneTasks : []" :key="task.id" :task="task" />
         </transition-group>
+        <div
+            @click="newTaskClick"
+            class="fixed bottom-8 right-8 rounded h-12 w-12 bg-blue-100 text-blue-900 text-2xl flex flex-row items-center justify-center shadow-md"
+        >
+            <i class="hero plus outline"></i>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-import { computed, ref } from '@vue/runtime-core'
+import { computed, nextTick, reactive, ref } from '@vue/runtime-core'
 import { asyncRef } from '../asyncRef'
 import TaskItem from '../components/TaskItem.vue'
 import { focusedTask } from '../globals'
@@ -102,6 +105,11 @@ export default {
         const doneTasks = asyncRef(async () => list.value?.tasks().query().where('done', true).get())
         const showDone = ref(false)
         const showPostponed = ref(false)
+        const taskitems = new Map()
+
+        console.log(taskitems)
+
+        const focusTask = (id) => (taskitems.has(id) ? taskitems.get(id).focus() : setTimeout(() => focusTask(id), 0))
 
         return {
             nowTasks,
@@ -111,6 +119,11 @@ export default {
             groupedPostponedTasks,
             selectedListId,
             focused: focusedTask,
+            taskitems,
+            newTaskClick: async () => {
+                const task = await list.value?.tasks().create({ title: '' })
+                focusTask(task.id)
+            },
             list,
             ready: computed(() => list.value != undefined),
             log: (...args) => console.log(...args),

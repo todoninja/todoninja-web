@@ -1,5 +1,5 @@
 <template>
-    <popup>
+    <popup id="account">
         <template v-slot:trigger="{ open }">
             <div
                 v-bind="$attrs"

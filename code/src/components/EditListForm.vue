@@ -3,7 +3,7 @@
         <label for="name" class="block text-sm font-medium text-slate-700"> Name </label>
         <input id="name" type="text" class="input-base mt-1" v-model="list.name" @keydown.enter="saveClick()" />
         <div class="flex flex-row items-center justify-between mt-4">
-            <popup>
+            <popup :id="`delete-list-${list.id}`">
                 <template v-slot:trigger="{ open }">
                     <i @click="open" class="hero trash outline text-red-500 py-2 px-4 bg-gray-100 rounded"></i>
                 </template>

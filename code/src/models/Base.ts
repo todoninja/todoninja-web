@@ -10,7 +10,11 @@ import { DateTime } from 'luxon'
 import { LocalStorageAdapter } from './adapters/LocalStorage'
 import { vueModel } from './VueModel'
 
-export class BaseModel extends vueModel(OpaqueModel) {}
+export class BaseModel extends vueModel(OpaqueModel) {
+    update(data: Partial<ModelAttributes<this>>): Promise<this> {
+        return this.$setAndSaveAttributes(data)
+    }
+}
 
 export const localStorageAdapter = new LocalStorageAdapter(new QueryEngine())
 export const inMemoryAdapter = new InMemoryAdapter(new QueryEngine())

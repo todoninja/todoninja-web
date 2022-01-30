@@ -21,3 +21,13 @@ export const router = createRouter({
     history: createWebHashHistory(),
     routes,
 })
+
+export const history: RouteLocationNormalized[] = []
+router.afterEach((to, from) => {
+    const found = history.map((r) => r.fullPath).indexOf(to.fullPath)
+    if (found >= 0) {
+        history.splice(found)
+    }
+    history.push(to)
+    console.log(history.map((r) => r.fullPath))
+})

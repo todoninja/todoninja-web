@@ -9,6 +9,7 @@ import { QueryEngine } from '@opaquejs/query-engine'
 import { DateTime } from 'luxon'
 import { LocalStorageAdapter } from './adapters/LocalStorage'
 import { vueModel } from './VueModel'
+import { DateTimeComparator } from './extensions/DateTimeComparator'
 
 export class BaseModel extends vueModel(OpaqueModel) {
     update(data: Partial<ModelAttributes<this>>): Promise<this> {
@@ -16,8 +17,14 @@ export class BaseModel extends vueModel(OpaqueModel) {
     }
 }
 
-export const localStorageAdapter = new LocalStorageAdapter(new QueryEngine())
-export const inMemoryAdapter = new InMemoryAdapter(new QueryEngine())
+export const queryEngine = new QueryEngine({
+    comparators: {
+        postponedUntil: (ctx) => new DateTimeComparator(ctx),
+    },
+})
+
+export const localStorageAdapter = new LocalStorageAdapter(queryEngine)
+export const inMemoryAdapter = new InMemoryAdapter(queryEngine)
 
 export function instanceForSource<T extends OpaqueTableInterface>(cls: T) {
     cls.$instanceForSource = true

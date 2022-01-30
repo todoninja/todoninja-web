@@ -17,7 +17,7 @@
             </transition-group>
             <transition-group name="flip-list" tag="div" key="other">
                 <div
-                    v-if="groupedPostponedTasks?.length > 0"
+                    v-if="groupedUpcomingTasks?.length > 0"
                     @click="showPostponed = !showPostponed"
                     class="mb-4"
                     key="upcomingtoggle"
@@ -31,7 +31,7 @@
                         Hide upcoming tasks
                     </div>
                 </div>
-                <template v-for="[index, group] of showPostponed ? groupedPostponedTasks : []">
+                <template v-for="[index, group] of showPostponed ? groupedUpcomingTasks : []">
                     <div class="mb-2 text-sm mt-8 text-gray-500" :key="index?.toISODate?.()">
                         {{
                             index.toLocaleString({
@@ -84,7 +84,7 @@ const groupTasks = (tasks: Task[]) => {
     for (const task of tasks) {
         grouped.get(task.postponedUntil?.toISODate()).push(task)
     }
-    return grouped
+    return new Map(Array.from(grouped.entries()).map(([datestring, tasks]) => [DateTime.fromISO(datestring), tasks]))
 }
 
 export default {
@@ -99,17 +99,31 @@ export default {
         const selectedListId = ref(null)
         const list = asyncRef(async () => (await List.find(selectedListId.value)) || List.default())
         const nowTasks = asyncRef(
-            async () => list.value?.tasks().query().where('done', false).andWhere('postponedUntil', null).get(),
+            async () =>
+                list.value
+                    ?.tasks()
+                    .query()
+                    .where('done', false)
+                    .where((query) =>
+                        query.where('postponedUntil', null).orWhere('postponedUntil', '<=', DateTime.now().endOf('day'))
+                    )
+                    .get(),
             []
         )
-        const postponedTasks = asyncRef(
-            async () => list.value?.tasks().query().where('done', false).andWhere('postponedUntil', '!=', null).get(),
+        const upcomingTasks = asyncRef(
+            async () =>
+                list.value
+                    ?.tasks()
+                    .query()
+                    .where('done', false)
+                    .andWhere('postponedUntil', '>', DateTime.now().endOf('day'))
+                    .get(),
             []
         )
-        const groupedPostponedTasks = computed(() =>
-            Array.from(groupTasks(postponedTasks.value || []).entries())
+        const groupedUpcomingTasks = computed(() =>
+            Array.from(groupTasks(upcomingTasks.value || []).entries())
                 .sort()
-                .map(([index, tasks]) => [index ? DateTime.fromISO(index) : 'now', tasks])
+                .map(([index, tasks]) => [index, tasks])
         )
         const doneTasks = asyncRef(async () => list.value?.tasks().query().where('done', true).get())
         const showDone = ref(false)
@@ -125,7 +139,7 @@ export default {
             doneTasks,
             showDone,
             showPostponed,
-            groupedPostponedTasks,
+            groupedUpcomingTasks,
             selectedListId,
             focused: focusedTask,
             taskitems,

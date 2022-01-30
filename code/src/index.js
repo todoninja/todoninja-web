@@ -4,6 +4,7 @@ import { InMemoryList, List, LocalStorageList } from './models/List'
 import { InMemoryTask, LocalStorageTask, Task } from './models/Task'
 import { router } from './router'
 import 'lit-datetime-picker'
+import { DateTime } from 'luxon'
 
 createApp(App)
     .use(router)
@@ -39,3 +40,4 @@ window.LTask = LocalStorageTask
 window.LList = LocalStorageList
 window.MList = InMemoryList
 window.List = List
+window.DateTime = DateTime

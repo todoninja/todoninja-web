@@ -2,7 +2,11 @@
     <div>
         <popup ref="popup" :id="`task-detail-${task.id}`">
             <template v-slot:trigger="{ open }">
-                <div v-bind="$attrs" @click="open" class="grid grid-cols-[auto_1fr_auto] gap-4 items-center mb-4">
+                <div
+                    v-bind="$attrs"
+                    @click="open"
+                    class="grid grid-cols-[auto_1fr_auto] gap-4 items-center py-2 -mx-8 px-8 clickable-bg"
+                >
                     <done-checkbox :value="task.done" @input="task.update({ done: $event })" />
                     <div>
                         {{ task.title }}
@@ -24,7 +28,10 @@
                 <div class="flex flex-row items-center mt-4">
                     <popup :id="`task-detail-${task.id}-postpone-picker`">
                         <template v-slot:trigger="{ open }">
-                            <div @click="open" class="rounded-full border px-3 py-1 text-sm flex flex-row items-center">
+                            <div
+                                @click="open"
+                                class="rounded-full border px-3 py-1 text-sm flex flex-row items-center clickable-bg"
+                            >
                                 <i class="hero chevron-double-right text-blue-500 outline mr-2"></i>
                                 <div v-if="task.postponedUntil">
                                     Postponed until

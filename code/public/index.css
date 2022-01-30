@@ -2,6 +2,9 @@
 html {
     font-family: 'Inter', sans-serif;
 }
+body {
+    overscroll-behavior-y: contain;
+}
 @tailwind components;
 
 :focus {
@@ -42,6 +45,67 @@ html {
 }
 
 @tailwind utilities;
+
+.clickable-bg {
+    @apply clickable;
+    background: radial-gradient(circle at center, rgb(0 0 0 / 0.1) 50%, transparent 50%);
+    background-size: 0%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.clickable-bg:hover {
+    animation-name: clickable-bg-circle, clickable-bg-fadeout;
+    animation-duration: 150ms, 150ms;
+    animation-delay: 0ms, 150ms;
+    animation-timing-function: ease-out, ease-in-out;
+}
+
+@keyframes clickable-bg-fadeout {
+    from {
+        background: rgba(0 0 0 / 0.1);
+    }
+    to {
+        background: rgba(0 0 0 / 0);
+    }
+}
+@keyframes clickable-bg-circle {
+    from {
+        background-size: 0%;
+    }
+    to {
+        background-size: 200%;
+    }
+}
+
+.clickable-bg-blue {
+    @apply clickable;
+}
+.clickable-bg-blue:hover {
+    animation: clickable-bg-circle-blue 150ms ease-out;
+}
+@keyframes clickable-bg-circle-blue {
+    from {
+        background: radial-gradient(circle at center, theme('colors.blue.100') 50%, transparent 50%);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 0%;
+    }
+    to {
+        background: radial-gradient(circle at center, theme('colors.blue.100') 50%, transparent 50%);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 0%;
+        background-size: 200%;
+    }
+}
+@keyframes clickable-bg-fadeout-blue {
+    from {
+        background: rgba(0 0 0 / 0.1);
+    }
+    to {
+        background: rgba(0 0 0 / 0);
+    }
+}
 
 .outline.hero {
     outline: none;

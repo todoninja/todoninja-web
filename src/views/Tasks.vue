@@ -17,7 +17,7 @@
             </transition-group>
             <transition-group name="flip-list" tag="div" key="other">
                 <div
-                    v-if="groupedUpcomingTasks?.length > 0"
+                    v-if="groupedUpcomingTasks?.size > 0"
                     @click="showPostponed = !showPostponed"
                     class="mb-4"
                     key="upcomingtoggle"
@@ -31,7 +31,7 @@
                         Hide upcoming tasks
                     </div>
                 </div>
-                <template v-for="[index, group] of showPostponed ? groupedUpcomingTasks : []">
+                <template v-for="[index, group] of showPostponed ? groupedUpcomingTasks.entries() : []">
                     <div class="mb-2 text-sm mt-8 text-gray-500" :key="index?.toISODate?.()">
                         {{
                             index.toLocaleString({
@@ -105,9 +105,7 @@ export default {
         })
         const nowTasks = asyncRef(async () => list.value?.tasks().query().where(nowScope).get() || ([] as Task[]), [])
         const upcomingTasks = asyncRef(
-            async () =>
-                list.value?.tasks().query().where(upcomingScope).orderBy('postponedUntil', 'asc').get() ||
-                ([] as Task[]),
+            async () => list.value?.tasks().query().where(upcomingScope).get() || ([] as Task[]),
             []
         )
         const groupedUpcomingTasks = computed(() => groupTasks(upcomingTasks.value))

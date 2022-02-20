@@ -97,6 +97,7 @@
                         </template>
                         <template v-slot:content="{ close }">
                             <lit-datetime-picker-calendar
+                                startOfWeek="1"
                                 @input="
                                     task.$setAndSaveAttributes({ postponedUntil: parseDate($event.detail) }).then(() =>
                                         close()

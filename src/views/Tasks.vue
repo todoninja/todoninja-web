@@ -105,7 +105,9 @@ export default {
         })
         const nowTasks = asyncRef(async () => list.value?.tasks().query().where(nowScope).get() || ([] as Task[]), [])
         const upcomingTasks = asyncRef(
-            async () => list.value?.tasks().query().where(upcomingScope).get() || ([] as Task[]),
+            async () =>
+                list.value?.tasks().query().where(upcomingScope).orderBy('postponedUntil', 'asc').get() ||
+                ([] as Task[]),
             []
         )
         const groupedUpcomingTasks = computed(() => groupTasks(upcomingTasks.value))

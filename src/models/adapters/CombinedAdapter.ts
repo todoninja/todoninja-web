@@ -13,7 +13,7 @@ export class CombinedAdapter implements AdapterInterface {
             sources.map(async ([model, adapter]) => {
                 const adapterresults = await adapter.read(model, query)
 
-                if (model.$instanceForSource === true) {
+                if ((model as any).$instanceForSource === true) {
                     return adapterresults.map((attributes) => ({ attributes, __combined_source: true, model }))
                 }
 
@@ -24,14 +24,15 @@ export class CombinedAdapter implements AdapterInterface {
     }
 
     insert(model: OpaqueTableInterface, data: OpaqueAttributes): Promise<OpaqueAttributes | PrimaryKeyValue> {
-        if (!this.adapters.has(model)) {
+        const adapter = this.adapters.get(model)
+        if (!adapter) {
             throw new Error(
                 `Combined Adapter has no adapter for model ${model.name}. Use ${Array.from(this.adapters.keys())
                     .map((model) => model.name)
                     .join(' or ')}`
             )
         }
-        return this.adapters.get(model).insert(model, data)
+        return adapter.insert(model, data)
     }
     async update(
         model: OpaqueTableInterface,

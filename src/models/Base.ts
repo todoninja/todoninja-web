@@ -46,6 +46,7 @@ export const localStorageAdapter = new LocalStorageAdapter(queryEngine)
 export const inMemoryAdapter = new InMemoryAdapter(queryEngine)
 
 export function instanceForSource<T extends OpaqueTableInterface>(cls: T) {
+    // @ts-ignore
     cls.$instanceForSource = true
     const oldFromRow = cls.$fromRow
     cls.$fromRow = function (data?: OpaqueAttributes) {

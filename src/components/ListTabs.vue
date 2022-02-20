@@ -1,7 +1,7 @@
 <template>
     <horizontal-scrolling class="fadescroll">
         <div class="flex flex-row items-center justify-center">
-            <popup v-for="list of lists" :key="list.id" :id="`edit-list-${list.id}`">
+            <popup v-for="list of lists" :key="list.id || 'default'" :id="`edit-list-${list.id}`">
                 <template v-slot:trigger="{ open }">
                     <div
                         v-longpressable
@@ -18,7 +18,7 @@
                     </div>
                 </template>
                 <template v-slot:content="{ close }">
-                    <edit-list-form :listId="list.id" @save="close()" @delete="close()" />
+                    <edit-list-form :listId="list.id!" @save="close()" @delete="close()" />
                 </template>
             </popup>
             <popup @close="resetClick" @open="popupOpens()" id="new-list">
@@ -62,12 +62,12 @@ import { InMemoryList, List, LocalStorageList } from '../models/List'
 import HorizontalScrolling from './HorizontalScrolling.vue'
 import { nextTick, watchEffect } from '@vue/runtime-core'
 import EditListForm from './EditListForm.vue'
-export default {
+import { defineComponent } from 'vue'
+export default defineComponent({
     components: { Popup, HorizontalScrolling, EditListForm },
     emits: ['input'],
     props: {
         value: {
-            type: Number,
             default: null,
         },
     },
@@ -98,12 +98,9 @@ export default {
                     nameInput.value?.focus()
                 })
             },
-            log(...args) {
-                console.log(...args)
-            },
         }
     },
-}
+})
 </script>
 
 <style scoped>

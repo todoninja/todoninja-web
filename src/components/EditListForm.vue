@@ -38,7 +38,10 @@ import Popup from './Popup.vue'
 export default defineComponent({
     components: { Popup },
     props: {
-        listId: Number,
+        listId: {
+            type: Number,
+            required: true,
+        },
     },
     emits: ['save', 'delete'],
     setup(props, context) {
@@ -47,12 +50,12 @@ export default defineComponent({
         return {
             list,
             async saveClick() {
-                await list.value.save()
+                await list.value?.save()
                 context.emit('save')
             },
             async deleteClick() {
                 context.emit('delete')
-                list.value.delete()
+                list.value?.delete()
             },
         }
     },

@@ -64,6 +64,16 @@ export default defineComponent({
         const close = () => {
             if (!isOpen.value) return Promise.resolve()
             const lastWithout = getLastRouteWithoutPopup()
+            if (lastWithout == null) {
+                router.replace({
+                    ...router.currentRoute.value,
+                    query: {
+                        ...router.currentRoute.value.query,
+                        popups: getCurrentPopups().filter((id) => id != props.id),
+                    },
+                })
+                return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))
+            }
             const lastWithoutOffset = history.length - 1 - history.indexOf(lastWithout)
             console.log('last index without', props.id, lastWithoutOffset)
             router.go(-lastWithoutOffset)

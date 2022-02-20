@@ -2,8 +2,8 @@ import { OpaqueAttributes, OpaqueRowInterface } from '@opaquejs/opaque/lib/contr
 import { watch, reactive, markRaw, isReactive } from 'vue'
 
 export class ReactiveMap<K, V extends object> extends Map<K, V> {
-    constructor(iterable: Iterable<readonly [K, V]> | readonly [readonly [K, V]] | undefined) {
-        super(iterable)
+    constructor(map: Map<K, V>) {
+        super(map)
         return reactive(this)
     }
 
@@ -31,10 +31,12 @@ export const vueModel = <T extends VueModellable>(base: T): T =>
 
         static $deserialize(data: OpaqueAttributes) {
             if (!isReactive(data)) {
+                // @ts-ignore
                 return super.$deserialize(data)
             }
             if (!deserialized.has(data)) {
                 deserialized.set(data, reactive({}))
+                // @ts-ignore
                 watch(data, (value) => Object.assign(deserialized.get(data), super.$deserialize(data)), {
                     immediate: true,
                 })

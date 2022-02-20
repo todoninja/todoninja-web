@@ -1,15 +1,14 @@
-import {
-    createRouter,
-    createWebHashHistory,
-    createWebHistory,
-    RouteLocationNormalized,
-    RouteRecordRaw,
-} from 'vue-router'
+import { createRouter, createWebHashHistory, RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 
 export const routes: RouteRecordRaw[] = [
     {
         path: '/',
         component: () => import('./views/Tasks.vue'),
+    },
+    {
+        path: '/tasks/:id',
+        component: () => import('./views/Task.vue'),
+        props: (route) => ({ id: parseInt(route.params.id as string) }),
     },
     {
         path: '/privacypolicy',

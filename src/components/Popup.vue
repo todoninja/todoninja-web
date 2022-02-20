@@ -1,5 +1,5 @@
 <template>
-    <slot name="trigger" :open="open"></slot>
+    <slot name="trigger" :open="open" :close="close"></slot>
     <teleport to="body">
         <transition name="popup-background">
             <div
@@ -12,7 +12,11 @@
         <transition name="popup-content">
             <div
                 v-if="isOpen"
-                class="fixed left-4 right-4 bottom-4 p-8 rounded-lg bg-white shadow-md popup-content z-50"
+                :class="{
+                    'left-4 right-4 bottom-4 rounded-b-lg': !bottom,
+                    'left-0 right-0 bottom-0': bottom,
+                }"
+                class="fixed p-8 rounded-t-lg bg-white shadow-md popup-content z-50 overflow-hidden"
                 @click.stop
             >
                 <slot name="content" :close="close"></slot>
@@ -25,12 +29,17 @@
 import { useRouter } from 'vue-router'
 import { computed, defineComponent, onUnmounted, watch } from '@vue/runtime-core'
 import { history } from '../router'
+import { propsToAttrMap } from '@vue/shared'
 
 export default defineComponent({
     props: {
         id: {
             required: true,
             type: String,
+        },
+        bottom: {
+            type: Boolean,
+            default: false,
         },
     },
     emits: ['open', 'close'],
@@ -56,6 +65,7 @@ export default defineComponent({
             if (!isOpen.value) return Promise.resolve()
             const lastWithout = getLastRouteWithoutPopup()
             const lastWithoutOffset = history.length - 1 - history.indexOf(lastWithout)
+            console.log('last index without', props.id, lastWithoutOffset)
             router.go(-lastWithoutOffset)
             // return promise that resolves after the popup has disappeared
             return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))

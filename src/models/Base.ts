@@ -3,6 +3,7 @@ import {
     AttributeOptionsContract,
     ModelAttributes,
     OpaqueAttributes,
+    PrimaryKeyValue,
 } from '@opaquejs/opaque/lib/contracts/ModelContracts'
 import { InMemoryAdapter } from '@opaquejs/opaque/lib/InMemoryAdapter'
 import { QueryEngine } from '@opaquejs/query-engine'
@@ -15,16 +16,28 @@ import { QueryBuilderModifier, QueryBuilderContract } from '@opaquejs/opaque/lib
 
 export class BaseModel extends vueModel(OpaqueModel) {
     update(data: Partial<ModelAttributes<this>>): Promise<this> {
-        return this.$setAndSaveAttributes(data)
+        if (this.$isPersistent) {
+            return this.$setAndSaveAttributes(data)
+        }
+        return Promise.resolve(this.$setAttributes(data))
     }
     static scope<This extends OpaqueTable>(this: This, modifier: QueryBuilderModifier<QueryBuilderContract<This>>) {
         return modifier
+    }
+    static async findOrFail(key: PrimaryKeyValue) {
+        const result = await this.find(key)
+        if (result === undefined) throw new Error(`No ${this.name} with ${this.primaryKey} equals ${key} found!`)
+        return result
+    }
+    is(other: BaseModel) {
+        return this.$primaryKeyValue == other.$primaryKeyValue
     }
 }
 
 export const queryEngine = new QueryEngine({
     comparators: {
         postponedUntil: (ctx) => new DateTimeComparator(ctx),
+        deadlineAt: (ctx) => new DateTimeComparator(ctx),
     },
 })
 

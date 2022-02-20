@@ -4,14 +4,7 @@
     </div>
 </template>
 
-<script lang="ts">
-import { onMounted, ref } from 'vue'
-export default {
-    setup() {
-        return {}
-    },
-}
-</script>
+<script lang="ts" setup></script>
 
 <style scoped>
 .hidebar::-webkit-scrollbar {

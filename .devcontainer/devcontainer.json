@@ -13,12 +13,12 @@
     },
     // Set *default* container specific settings.json values on container create.
     "settings": {
-        "vetur.validation.template": false
+
     },
     // Add the IDs of extensions you want installed when the container is created.
     "extensions": [
         "esbenp.prettier-vscode",
-        "octref.vetur"
+        "johnsoncodehk.volar"
     ],
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],

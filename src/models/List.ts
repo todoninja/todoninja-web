@@ -8,7 +8,7 @@ import { ReactiveMap } from './VueModel'
 
 export class List extends BaseModel {
     @attribute({ primaryKey: true })
-    public id: number
+    public id: number | null | undefined = undefined
 
     @attribute()
     public name: string = ''

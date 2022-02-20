@@ -21,8 +21,21 @@ export class Task extends BaseModel {
     @date()
     public postponedUntil: DateTime | null = null
 
+    @date()
+    public deadlineAt: DateTime | null = null
+
     list() {
         return this.belongsTo(List)
+    }
+
+    daysOverdue(now: DateTime = DateTime.now()) {
+        return -(this.deadlineAt?.startOf('day').diff(now.startOf('day'), 'days').days || 0)
+    }
+    isOverdue(now: DateTime = DateTime.now()) {
+        return this.daysOverdue(now) > 0
+    }
+    isToday(now: DateTime = DateTime.now()) {
+        return this.deadlineAt?.hasSame(now, 'day')
     }
 }
 
@@ -31,11 +44,17 @@ export const undoneScope = Task.scope((query) => query.where('done', false))
 export const upcomingScope = Task.scope((query) =>
     query.where(undoneScope).andWhere('postponedUntil', '>', DateTime.now().endOf('day'))
 )
+export const overdueScope = Task.scope((query) =>
+    query.where(undoneScope).andWhere('deadlineAt', '<', DateTime.now().startOf('day'))
+)
 export const nowScope = Task.scope((query) =>
     query
         .where(undoneScope)
         .andWhere((query) =>
             query.where('postponedUntil', null).orWhere('postponedUntil', '<=', DateTime.now().endOf('day'))
+        )
+        .andWhere((query) =>
+            query.andWhere('deadlineAt', null).orWhere('deadlineAt', '>=', DateTime.now().startOf('day'))
         )
 )
 

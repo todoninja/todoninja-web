@@ -1,5 +1,5 @@
 <template>
-    <Popup :id="`task-options-${task.id}`">
+    <Popup>
         <template #trigger="{ open }">
             <slot :open="open"></slot>
         </template>
@@ -11,7 +11,7 @@
                         <div class="ml-4">{{ task.deadlineAt ? 'Change' : 'Add' }} Deadline</div>
                     </div>
                 </DeadlinePickerPopup>
-                <Popup :id="`task-delete-${task.id}`">
+                <Popup>
                     <template #trigger="{ open }">
                         <div
                             class="flex flex-row items-center text-gray-800 -mx-8 px-8 py-4 clickable-bg"

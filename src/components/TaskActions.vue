@@ -1,6 +1,6 @@
 <template>
     <HorizontalScrolling class="items-center">
-        <Popup :id="`task-detail-${task.id}-postpone-picker`">
+        <Popup>
             <template #trigger="{ open }">
                 <Tag
                     @click="open"

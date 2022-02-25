@@ -1,7 +1,7 @@
 <template>
     <horizontal-scrolling class="fadescroll">
         <div class="flex flex-row items-center justify-center">
-            <popup v-for="list of lists" :key="list.id || 'default'" :id="`edit-list-${list.id}`">
+            <popup v-for="list of lists" :key="list.id || 'default'">
                 <template v-slot:trigger="{ open }">
                     <div
                         v-longpressable
@@ -21,7 +21,7 @@
                     <edit-list-form :listId="list.id!" @save="close()" @delete="close()" />
                 </template>
             </popup>
-            <popup @close="resetClick" @open="popupOpens()" id="new-list">
+            <popup @close="resetClick" @open="popupOpens()">
                 <template v-slot:trigger="{ open }">
                     <i @click="open" class="hero plus solid text-gray-400 text-xl rounded clickable-bg p-2"></i>
                 </template>
@@ -60,7 +60,7 @@ import Popup from './Popup.vue'
 import { asyncRef } from '../asyncRef'
 import { InMemoryList, List, LocalStorageList } from '../models/List'
 import HorizontalScrolling from './HorizontalScrolling.vue'
-import { nextTick, watchEffect } from '@vue/runtime-core'
+import { nextTick } from '@vue/runtime-core'
 import EditListForm from './EditListForm.vue'
 import { defineComponent } from 'vue'
 export default defineComponent({
@@ -71,9 +71,9 @@ export default defineComponent({
             default: null,
         },
     },
-    setup() {
+    async setup() {
         const newList = reactive({ name: '', backend: 'LocalStorage' })
-        const lists = asyncRef(async () => [List.default(), ...(await List.all())])
+        const lists = await asyncRef(async () => [List.default(), ...(await List.all())])
         const resetNewList = () => {
             newList.name = ''
         }

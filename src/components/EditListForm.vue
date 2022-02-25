@@ -3,7 +3,7 @@
         <label for="name" class="block text-sm font-medium text-slate-700"> Name </label>
         <input id="name" type="text" class="input-base mt-1" v-model="list.name" @keydown.enter="saveClick()" />
         <div class="flex flex-row items-center justify-between mt-4">
-            <popup :id="`delete-list-${list.id}`">
+            <popup>
                 <template v-slot:trigger="{ open }">
                     <i @click="open" class="hero trash outline text-red-500 py-2 px-4 bg-gray-100 rounded"></i>
                 </template>
@@ -44,18 +44,18 @@ export default defineComponent({
         },
     },
     emits: ['save', 'delete'],
-    setup(props, context) {
-        const list = asyncRef(() => List.find(props.listId))
+    async setup(props, context) {
+        const list = await asyncRef(() => List.find(props.listId))
 
         return {
             list,
             async saveClick() {
-                await list.value?.save()
+                await list.value.save()
                 context.emit('save')
             },
             async deleteClick() {
                 context.emit('delete')
-                list.value?.delete()
+                list.value.delete()
             },
         }
     },

@@ -32,7 +32,7 @@ import DoneCheckbox from '../components/DoneCheckbox.vue'
 import Popup from '../components/Popup.vue'
 import HorizontalScrolling from '../components/HorizontalScrolling.vue'
 import Tag from '../components/Tag.vue'
-import { definiteAsyncRef } from '../asyncRef'
+import { asyncRef } from '../asyncRef'
 import TaskOptionsPopup from '../components/TaskOptionsPopup.vue'
 import DeadlinePickerPopup from '../components/DeadlinePickerPopup.vue'
 import DeadlineIndicator from '../components/DeadlineIndicator.vue'
@@ -41,7 +41,7 @@ import TaskActions from '../components/TaskActions.vue'
 const props = defineProps<{ id: number }>()
 const input = ref<HTMLInputElement | null>(null)
 
-const task = await definiteAsyncRef(() => Task.find(props.id))
+const task = await asyncRef(() => Task.find(props.id))
 
 async function taskInput(event: Event) {
     await task.value.update({

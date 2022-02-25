@@ -1,6 +1,5 @@
 <template>
     <DatePickerPopup
-        :id="`task-${task.id}-deadline-picker`"
         v-slot:default="{ open }"
         :value="task.deadlineAt"
         @input="

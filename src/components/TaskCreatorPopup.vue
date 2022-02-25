@@ -1,5 +1,5 @@
 <template>
-    <Popup id="task-creator" bottom>
+    <Popup bottom>
         <template #trigger="{ open }">
             <slot :open="() => open().then(() => input?.focus())"></slot>
         </template>

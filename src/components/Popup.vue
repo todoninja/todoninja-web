@@ -6,7 +6,7 @@
                 v-if="isOpen"
                 @click.stop="close"
                 class="fixed top-0 left-0 right-0 bottom-0 backdrop-blur-md z-50"
-                style="background: linear-gradient(to bottom, rgb(255 255 255 / 1), rgb(0 0 0 / 0.1) 8rem)"
+                style="background: linear-gradient(to bottom, rgb(255 255 255 / 1), rgb(0 0 0 / 0.2) 4rem)"
             ></div>
         </transition>
         <transition name="popup-content">
@@ -25,85 +25,87 @@
     </teleport>
 </template>
 
-<script lang="ts">
-import { useRouter } from 'vue-router'
-import { computed, defineComponent, onUnmounted, watch } from '@vue/runtime-core'
+<script lang="ts" setup>
+import { RouteLocationNormalized, useRouter } from 'vue-router'
+import { computed, onUnmounted, watch } from '@vue/runtime-core'
 import { history } from '../router'
-import { propsToAttrMap } from '@vue/shared'
+import { getCurrentInstance } from 'vue'
 
-export default defineComponent({
-    props: {
-        id: {
-            required: true,
-            type: String,
-        },
-        bottom: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    emits: ['open', 'close'],
-    setup(props, context) {
-        const router = useRouter()
-        const getLastRouteWithoutPopup = () => {
-            for (const route of [...history].reverse()) {
-                if (!route.query.popups?.includes(props.id)) {
-                    return route
-                }
-            }
-            return null
-        }
-        const getCurrentPopups = () => {
-            const popups = router.currentRoute.value.query.popups
-            if (popups == undefined) {
-                return []
-            }
-            return typeof popups == 'string' ? [popups] : popups
-        }
-        const isOpen = computed(() => getCurrentPopups().includes(props.id) || false)
-        const close = () => {
-            if (!isOpen.value) return Promise.resolve()
-            const lastWithout = getLastRouteWithoutPopup()
-            if (lastWithout == null) {
-                router.replace({
-                    ...router.currentRoute.value,
-                    query: {
-                        ...router.currentRoute.value.query,
-                        popups: getCurrentPopups().filter((id) => id != props.id),
-                    },
-                })
-                return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))
-            }
-            const lastWithoutOffset = history.length - 1 - history.indexOf(lastWithout)
-            console.log('last index without', props.id, lastWithoutOffset)
-            router.go(-lastWithoutOffset)
-            // return promise that resolves after the popup has disappeared
-            return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))
-        }
-        const open = () => {
-            if (isOpen.value) return Promise.resolve()
-            router.push({
-                ...router.currentRoute.value,
-                query: {
-                    ...router.currentRoute.value.query,
-                    popups: [...getCurrentPopups(), props.id],
-                },
-            })
-            return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))
-        }
+withDefaults(
+    defineProps<{
+        bottom?: boolean
+    }>(),
+    { bottom: false }
+)
+const emit = defineEmits<{
+    (e: 'open'): void
+    (e: 'close'): void
+}>()
 
-        onUnmounted(() => close())
-        watch(isOpen, (to, from) => {
-            if (to && !from) context.emit('open')
-            if (!to && from) context.emit('close')
+const currentInstance = getCurrentInstance()
+if (!currentInstance) throw new Error('Popup needs instance!')
+const id: number = currentInstance.uid
+
+const router = useRouter()
+
+const getCurrentPopups = () => getPopupsInRoute(router.currentRoute.value)
+const isOpen = computed(() => getCurrentPopups().includes(id))
+
+function getLastRouteWithoutPopup() {
+    for (const route of [...history].reverse()) {
+        if (!getPopupsInRoute(route).includes(id)) {
+            return route
+        }
+    }
+    return null
+}
+function getPopupsInRoute({ query: { popups } }: RouteLocationNormalized) {
+    if (popups == undefined) return []
+    if (typeof popups == 'string') popups = [popups]
+
+    return popups.filter((n) => typeof n === 'string').map((n) => parseInt(n!))
+}
+function close() {
+    if (!isOpen.value) return Promise.resolve()
+    const lastWithout = getLastRouteWithoutPopup()
+    if (lastWithout == null) {
+        router.replace({
+            ...router.currentRoute.value,
+            query: {
+                ...router.currentRoute.value.query,
+                popups: getCurrentPopups().filter((id) => id != id),
+            },
         })
+        return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))
+    }
+    const lastWithoutOffset = history.length - 1 - history.indexOf(lastWithout)
+    router.go(-lastWithoutOffset)
+    // return promise that resolves after the popup has disappeared
+    return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))
+}
+function open() {
+    if (isOpen.value) return Promise.resolve()
+    router.push({
+        ...router.currentRoute.value,
+        query: {
+            ...router.currentRoute.value.query,
+            popups: [...getCurrentPopups(), id],
+        },
+    })
+    // return promise that resolves after the popup has disappeared
+    return new Promise<void>((resolve) => setTimeout(() => resolve(), 150))
+}
 
-        return {
-            isOpen,
-            open,
-            close,
-        }
-    },
+onUnmounted(() => close())
+watch(isOpen, (to, from) => {
+    if (to && !from) emit('open')
+    if (!to && from) emit('close')
+})
+
+defineExpose({
+    isOpen,
+    open,
+    close,
 })
 </script>
 

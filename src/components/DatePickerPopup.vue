@@ -1,5 +1,5 @@
 <template>
-    <Popup :id="id">
+    <Popup>
         <template #trigger="{ open, close }">
             <slot :open="open" :close="close"></slot>
         </template>
@@ -17,7 +17,7 @@
 import Popup from './Popup.vue'
 import { DateTime } from 'luxon'
 
-defineProps<{ value: DateTime | null; id: string }>()
+defineProps<{ value: DateTime | null }>()
 defineEmits<{
     (e: 'input', datetime: DateTime, close: () => Promise<void>): void
 }>()

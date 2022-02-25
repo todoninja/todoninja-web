@@ -1,3 +1,4 @@
+import { reactive, ref } from 'vue'
 import { createRouter, createWebHashHistory, RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 
 export const routes: RouteRecordRaw[] = [
@@ -29,4 +30,16 @@ router.afterEach((to, from) => {
     }
     history.push(to)
     console.log(history.map((r) => r.fullPath))
+})
+
+export const navigationInfo = reactive<{ direction: 'forward' | 'backward' | 'none' }>({
+    direction: 'none',
+})
+
+router.beforeEach((to, from) => {
+    const [todepth, fromdepth] = [to, from].map((route) => route.path.split('/').filter((value) => value).length)
+
+    if (todepth > fromdepth) navigationInfo.direction = 'forward'
+    else if (todepth < fromdepth) navigationInfo.direction = 'backward'
+    else navigationInfo.direction = 'none'
 })

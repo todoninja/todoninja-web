@@ -1,18 +1,27 @@
 <template>
     <div class="grid grid-rows-[1fr_auto] h-screen">
         <div>
-            <div class="grid grid-cols-[auto_1fr_auto] gap-4 items-center p-4">
-                <i @click="$router.back()" class="hero solid chevron-left clickable-bg -m-4 p-4 text-xl"></i>
+            <div class="grid grid-cols-[auto_1fr_auto] gap-4 items-center p-4 bg-surface text-on-surface">
+                <i @click="$router.back()" class="hero outline arrow-left clickable-bg -m-4 p-4 text-lg"></i>
                 <div></div>
                 <TaskOptionsPopup :task="task">
                     <template #default="{ open }">
-                        <i @click="open" class="hero dots-vertical outline p-4 -m-4 clickable-bg rounded-full"></i>
+                        <i
+                            @click="open"
+                            class="hero dots-vertical outline p-4 -m-4 clickable-bg rounded-full text-on-surface-variant"
+                        ></i>
                     </template>
                 </TaskOptionsPopup>
             </div>
             <div class="grid grid-cols-[auto_1fr] gap-4 items-center mb-4 text-xl m-6 mt-4">
                 <DoneCheckbox :value="task.done" @input="task.update({ done: $event })" borderClass="border-gray-500" />
-                <input type="text" :value="task.title" @input="taskInput($event)" ref="input" />
+                <input
+                    type="text"
+                    :value="task.title"
+                    @input="taskInput($event)"
+                    ref="input"
+                    class="bg-background w-full"
+                />
             </div>
             <div class="py-8">
                 <DeadlineIndicator :task="task" />

@@ -56,7 +56,7 @@
         <task-creator-popup :task="newTask" v-slot="{ open }" @saved="newTaskSaved()">
             <div
                 @click="newTaskClick(open)"
-                class="fixed bottom-8 right-8 rounded h-12 w-12 bg-blue-100 text-blue-900 text-2xl flex flex-row items-center justify-center shadow-md"
+                class="fixed bottom-8 right-8 rounded h-12 w-12 bg-primary-container text-on-primary-container text-2xl flex flex-row items-center justify-center shadow-md"
             >
                 <i class="hero plus outline"></i>
             </div>

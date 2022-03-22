@@ -1,4 +1,4 @@
-import { reactive, ref } from 'vue'
+import { reactive } from 'vue'
 import { createRouter, createWebHashHistory, RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 
 export const routes: RouteRecordRaw[] = [
@@ -14,6 +14,10 @@ export const routes: RouteRecordRaw[] = [
     {
         path: '/privacypolicy',
         component: () => import('./views/PrivacyPolicy.vue'),
+    },
+    {
+        path: '/backends',
+        component: () => import('./views/Backends.vue'),
     },
 ]
 

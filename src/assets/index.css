@@ -62,7 +62,7 @@ body {
 .page-backward-enter-active {
     transition: opacity calc(45ms / 1) calc(75ms / 1), transform calc(300ms / 1);
     /* transition-duration: 10s; */
-    @apply absolute top-0 left-0 w-screen bg-white;
+    @apply absolute top-0 left-0 w-screen bg-background;
 }
 .page-backward-leave-active,
 .page-forward-enter-active {
@@ -151,22 +151,4 @@ body {
 
 .outline.hero {
     outline: none;
-}
-
-.popup-content-enter-active,
-.popup-content-leave-active {
-    @apply transition-all;
-}
-.popup-content-enter-from,
-.popup-content-leave-to {
-    @apply opacity-0 translate-y-20;
-}
-
-.popup-background-enter-active,
-.popup-background-leave-active {
-    @apply transition-all;
-}
-.popup-background-enter-from,
-.popup-background-leave-to {
-    @apply opacity-0;
 }

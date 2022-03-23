@@ -1,10 +1,17 @@
 <template>
     <div class="px-8 min-h-screen grid grid-rows-[auto_1fr] mb-32">
         <div
-            class="grid grid-cols-[1fr_auto] sticky top-0 left-0 right-0 bg-gradient-to-b from-white via-white/20 to-white/20 backdrop-blur-md py-4 -mx-8 px-8 z-20"
+            :class="`grid grid-cols-[auto_1fr_auto] -mx-8 ${
+                scrolled ? 'bg-surface-2' : 'bg-surface'
+            } px-4 py-4 gap-6 items-center sticky top-0 left-0 right-0 transition`"
         >
-            <list-tabs :value="selectedListId" @input="selectedListId = $event" class="-ml-8 px-8 pr-16" />
-            <account-popup class="z-10" />
+            <navigation-drawer>
+                <template #trigger="{ open }">
+                    <i @click="open" class="hero menu solid text-on-surface text-2xl"></i>
+                </template>
+            </navigation-drawer>
+            <div class="text-on-surface text-[22px] text-center">{{ list.name }}</div>
+            <i class="hero user-circle solid text-on-surface-variant text-3xl"></i>
         </div>
         <div class="mt-4 grid grid-rows-[1fr_auto]">
             <transition-group name="flip-list" tag="div">
@@ -53,14 +60,14 @@
                 <task-item v-for="task of showDone ? doneTasks : []" :key="task.id" :task="task" />
             </transition-group>
         </div>
-        <task-creator-popup :task="newTask" v-slot="{ open }" @saved="newTaskSaved()">
+        <task-creator-dialog :task="newTask" v-slot="{ open }" @saved="newTaskSaved()">
             <div
                 @click="newTaskClick(open)"
                 class="fixed bottom-8 right-8 rounded h-12 w-12 bg-primary-container text-on-primary-container text-2xl flex flex-row items-center justify-center shadow-md"
             >
                 <i class="hero plus outline"></i>
             </div>
-        </task-creator-popup>
+        </task-creator-dialog>
     </div>
 </template>
 
@@ -69,12 +76,11 @@ import { computed, ref } from '@vue/runtime-core'
 import { asyncRef } from '../asyncRef'
 import TaskItem from '../components/TaskItem.vue'
 import { List } from '../models/List'
-import ListTabs from '../components/ListTabs.vue'
-import AccountPopup from '../components/AccountPopup.vue'
 import { doneScope, nowScope, overdueScope, upcomingScope } from '../models/Task'
 import { groupBy } from '../helpers'
 import { DateTime } from 'luxon'
-import TaskCreatorPopup from '../components/TaskCreatorPopup.vue'
+import TaskCreatorDialog from '../components/TaskCreatorDialog.vue'
+import NavigationDrawer from '../components/NavigationDrawer.vue'
 
 const selectedListId = ref(null)
 const list = await asyncRef(async () => {
@@ -108,4 +114,13 @@ function newTaskClick(opener: () => void) {
 function newTaskSaved() {
     resetNewTask()
 }
+
+const scrolled = ref(false)
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 0) {
+        scrolled.value = true
+    } else {
+        scrolled.value = false
+    }
+})
 </script>

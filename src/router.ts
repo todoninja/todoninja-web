@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 import { createRouter, createWebHashHistory, RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
+import { clearPopupsOnInitialStart } from './use/backNavigatable'
 
 export const routes: RouteRecordRaw[] = [
     {
@@ -26,6 +27,8 @@ export const router = createRouter({
     routes,
 })
 
+clearPopupsOnInitialStart()
+
 export const history: RouteLocationNormalized[] = []
 router.afterEach((to, from) => {
     const found = history.map((r) => r.fullPath).indexOf(to.fullPath)
@@ -33,7 +36,10 @@ router.afterEach((to, from) => {
         history.splice(found)
     }
     history.push(to)
-    console.log(history.map((r) => r.fullPath))
+    console.log(
+        'history',
+        history.map((r) => r.fullPath)
+    )
 })
 
 export const navigationInfo = reactive<{ direction: 'forward' | 'backward' | 'none' }>({

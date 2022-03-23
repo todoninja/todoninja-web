@@ -33,7 +33,7 @@
 import { defineComponent } from 'vue'
 import { asyncRef } from '../asyncRef'
 import { List } from '../models/List'
-import Popup from './Popup.vue'
+import Popup from './Dialog'
 
 export default defineComponent({
     components: { Popup },

@@ -18,6 +18,7 @@
 
 <script lang="ts" setup>
 import { useBackNavigatable } from '../use/backNavigatable'
+import { useOverlaying } from '../use/overlaying'
 
 const emit = defineEmits<{
     (e: 'open'): void
@@ -25,9 +26,16 @@ const emit = defineEmits<{
 }>()
 
 const { isOpen, open: openBack, close: closeBack, onOpen, onClose } = useBackNavigatable()
+const { startOverlaying, stopOverlaying } = useOverlaying(0.4)
 
-onOpen(() => emit('open'))
-onClose(() => emit('close'))
+onOpen(() => {
+    emit('open')
+    startOverlaying()
+})
+onClose(() => {
+    emit('close')
+    stopOverlaying()
+})
 
 function close() {
     return closeBack()

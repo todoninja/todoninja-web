@@ -1,5 +1,6 @@
 <template>
     <div class="min-h-screen">
+        <NotificationBarColor color="surface" />
         <TopAppBar>
             <template #right>
                 <TaskOptionsMenu :task="task">
@@ -38,6 +39,7 @@ import TaskOptionsMenu from '../components/TaskMenu.vue'
 import DeadlineIndicator from '../components/DeadlineIndicator.vue'
 import TaskActions from '../components/TaskActions.vue'
 import TopAppBar from '../components/TopAppBar.vue'
+import NotificationBarColor from '../components/NotificationBarColor.vue'
 
 const props = defineProps<{ id: number }>()
 const input = ref<HTMLInputElement | null>(null)

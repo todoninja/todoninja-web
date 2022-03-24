@@ -138,7 +138,7 @@ import ListNavigationDrawerItems from '../components/ListNavigationDrawerItems.v
 import TextButton from '../components/TextButton.vue'
 import EditListDialog from '../components/EditListDialog.vue'
 import FloatingActionButton from '../components/FloatingActionButton.vue'
-import NotificationBarColor from '../NotificationBarColor.vue'
+import NotificationBarColor from '../components/NotificationBarColor.vue'
 
 const selectedListId = ref<number | null | undefined>(null)
 const list = await asyncRef(async () => {

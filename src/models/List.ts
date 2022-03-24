@@ -1,6 +1,6 @@
 import { attribute } from '@opaquejs/opaque'
 import { HasManyRelationContract } from '@opaquejs/opaque/lib/contracts/ModelContracts'
-import { reactive, ReactiveEffect } from 'vue'
+import { reactive, ReactiveEffect, setTransitionHooks } from 'vue'
 import { CombinedAdapter } from './adapters/CombinedAdapter'
 import { BaseModel, inMemoryAdapter, instanceForSource, localStorageAdapter } from './Base'
 import { InMemoryTask, LocalStorageTask, Task } from './Task'
@@ -36,6 +36,10 @@ export class List extends BaseModel {
     }
     public nameWithoutIcon() {
         return this.name.slice(this.icon().length).trim()
+    }
+
+    public isDefault() {
+        return this.id === null
     }
 }
 

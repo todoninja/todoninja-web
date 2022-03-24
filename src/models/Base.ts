@@ -32,6 +32,16 @@ export class BaseModel extends vueModel(OpaqueModel) {
     is(other: BaseModel) {
         return this.$primaryKeyValue == other.$primaryKeyValue
     }
+
+    $getRow() {
+        return Object.getPrototypeOf(this.$attributes.chain)
+    }
+
+    clone() {
+        const clone = (this.constructor as typeof BaseModel).$fromRow({})
+        clone.$setRow(this.$getRow(), { raw: true })
+        return clone
+    }
 }
 
 export const queryEngine = new QueryEngine({

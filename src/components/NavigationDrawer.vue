@@ -10,9 +10,7 @@
                 @click.stop
                 class="fixed top-0 left-0 bottom-0 z-50 bg-surface-1 px-3 pt-8 min-w-[17rem] rounded-r-3xl"
             >
-                <div class="text-on-surface-variant font-medium text-sm pl-4 mb-4">Parchment</div>
-                <naivgation-drawer-item title="Entry" icon="inbox" />
-                <naivgation-drawer-item active title="Outbox" icon="paper-airplane" />
+                <slot name="content" :close="close"></slot>
             </div>
         </transition>
     </teleport>
@@ -20,7 +18,6 @@
 
 <script lang="ts" setup>
 import { useBackNavigatable } from '../use/backNavigatable'
-import NaivgationDrawerItem from './NaivgationDrawerItem.vue'
 
 const emit = defineEmits<{
     (e: 'open'): void
@@ -56,12 +53,15 @@ defineExpose({
 .popup-content-enter-active,
 .popup-content-leave-active {
     @apply transition-all;
+    z-index: 100;
 }
 .popup-content-enter-from {
-    transform: translateX(-20rem);
+    opacity: 0;
+    transform: translateX(-2rem);
 }
 .popup-content-leave-to {
-    transform: translateX(-20rem);
+    opacity: 0;
+    transform: translateX(-2rem);
 }
 
 .popup-background-enter-active,

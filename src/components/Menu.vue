@@ -5,10 +5,10 @@
         <transition name="popup-content">
             <div
                 v-if="isOpen"
-                class="fixed z-50 flex flex-col items-stretch bg-surface-2 shadow-md rounded py-2"
+                class="fixed z-50 flex flex-col items-stretch bg-surface-2 shadow-md rounded py-2 min-w-[112px] max-w-[280px]"
                 :style="`top: ${position.top}px; right: max(1rem, ${position.right}px)`"
             >
-                <slot name="content"></slot>
+                <slot name="content" :close="close"></slot>
             </div>
         </transition>
     </teleport>

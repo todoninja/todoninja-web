@@ -14,13 +14,13 @@
                 </TaskOptionsMenu>
             </div>
             <div class="grid grid-cols-[auto_1fr] gap-4 items-center mb-4 text-xl p-6 pt-4 bg-surface">
-                <DoneCheckbox :value="task.done" @input="task.update({ done: $event })" borderClass="border-gray-500" />
+                <DoneCheckbox :value="task.done" @input="task.update({ done: $event })" />
                 <input
                     type="text"
                     :value="task.title"
                     @input="taskInput($event)"
                     ref="input"
-                    class="bg-transparent w-full"
+                    class="bg-transparent w-full text-on-surface"
                 />
             </div>
             <div class="py-8">

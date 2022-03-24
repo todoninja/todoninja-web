@@ -5,6 +5,6 @@ on:
 jobs:
     deploy_pr:
         runs-on: ubuntu-latest
-        if: ${{ github.event.issue.pull_request }}
+        if: ${{ github.event.issue.pull_request && github-actor == 'sebastiandittrich' && github.event.comment.body == '/deploy' }}
         steps:
-            - run: echo "Hello PR Comment ${{ github.actor }} ${{ toJSON(github.event) }}"
+            - run: echo "Hello PR Comment ${{ github.event.comment.body }}"

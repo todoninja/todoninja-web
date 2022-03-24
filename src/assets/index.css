@@ -1,3 +1,4 @@
+@import '../../packages/material-you/material-tokens.css';
 @tailwind base;
 html {
     font-family: 'Inter', sans-serif;

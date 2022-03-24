@@ -114,12 +114,7 @@
             </transition-group>
         </div>
         <task-creator-dialog :task="newTask" v-slot="{ open }" @saved="newTaskSaved()">
-            <div
-                @click="newTaskClick(open)"
-                class="fixed bottom-8 right-8 rounded h-12 w-12 bg-primary-container text-on-primary-container text-2xl flex flex-row items-center justify-center shadow-md"
-            >
-                <i class="hero plus outline"></i>
-            </div>
+            <floating-action-button @click="newTaskClick(open)" icon="plus" />
         </task-creator-dialog>
     </div>
 </template>
@@ -143,6 +138,7 @@ import EditListForm from '../components/EditListForm.vue'
 import TextButton from '../components/TextButton.vue'
 import EditListDialog from '../components/EditListDialog.vue'
 import MenuItem1 from '../components/MenuItem.vue'
+import FloatingActionButton from '../components/FloatingActionButton.vue'
 
 const selectedListId = ref<number | null | undefined>(null)
 const list = await asyncRef(async () => {

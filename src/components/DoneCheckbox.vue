@@ -10,6 +10,6 @@
 </template>
 
 <script lang="ts" setup>
-withDefaults(defineProps<{ value: Boolean; borderClass?: string }>(), { borderClass: 'border-gray-800' })
+withDefaults(defineProps<{ value: Boolean; borderClass?: string }>(), { borderClass: 'border-on-surface' })
 defineEmits(['input'])
 </script>

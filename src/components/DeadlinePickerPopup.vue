@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { Task } from '../models/Task'
-import DatePickerPopup from './DatePickerPopup.vue'
+import DatePickerPopup from './DatePickerDialog.vue'
 
 defineProps<{ task: Task }>()
 defineEmits<{

@@ -1,5 +1,5 @@
 <template>
-    <Popup>
+    <Dialog>
         <template #trigger="{ open, close }">
             <slot :open="open" :close="close"></slot>
         </template>
@@ -10,11 +10,11 @@
                 :value="value?.toJSDate()"
             ></lit-datetime-picker-calendar>
         </template>
-    </Popup>
+    </Dialog>
 </template>
 
 <script lang="ts" setup>
-import Popup from './Popup.vue'
+import Dialog from './Dialog.vue'
 import { DateTime } from 'luxon'
 
 defineProps<{ value: DateTime | null }>()

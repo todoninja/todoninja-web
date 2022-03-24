@@ -4,8 +4,8 @@
             <i
                 class="hero flag solid"
                 :class="{
-                    'text-red-500': task.isOverdue(),
-                    'text-blue-500': task.isToday(),
+                    'text-error': task.isOverdue(),
+                    'text-primary': task.isToday(),
                 }"
             ></i>
             <div class="flex-1 ml-4">
@@ -13,8 +13,8 @@
                 <span
                     @click="open"
                     :class="{
-                        'text-red-500': task.isOverdue(),
-                        'text-blue-500': !task.isOverdue(),
+                        'text-error': task.isOverdue(),
+                        'text-primary': !task.isOverdue(),
                     }"
                     class="clickable"
                     >{{

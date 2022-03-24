@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import Popup from './Popup.vue'
+import Popup from './Dialog'
 
 export default defineComponent({
     components: { Popup },

@@ -56,7 +56,7 @@
 
 <script lang="ts">
 import { reactive, ref } from '@vue/reactivity'
-import Popup from './Popup.vue'
+import Popup from './Dialog.ts
 import { asyncRef } from '../asyncRef'
 import { InMemoryList, List, LocalStorageList } from '../models/List'
 import HorizontalScrolling from './HorizontalScrolling.vue'

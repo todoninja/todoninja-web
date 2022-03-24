@@ -1,8 +1,11 @@
 <template>
     <HorizontalScrolling class="items-center">
-        <Popup>
-            <template #trigger="{ open }">
-                <Tag
+        <DatePickerDialog
+            @input="(datetime, close) => task.update({ postponedUntil: datetime }).then(() => close())"
+            :value="task.postponedUntil"
+        >
+            <template v-slot="{ open }">
+                <Chip
                     @click="open"
                     icon="chevron-double-right"
                     :removable="task.postponedUntil != null"
@@ -19,29 +22,17 @@
                         }}
                     </template>
                     <template v-else>Postpone</template>
-                </Tag>
+                </Chip>
             </template>
-            <template #content="{ close }">
-                <lit-datetime-picker-calendar
-                    startOfWeek="1"
-                    @input="
-                        task.update({
-                            postponedUntil: DateTime.fromJSDate($event.detail),
-                        }).then(() => close())
-                    "
-                    :value="task.postponedUntil?.toJSDate()"
-                ></lit-datetime-picker-calendar>
-            </template>
-        </Popup>
+        </DatePickerDialog>
     </HorizontalScrolling>
 </template>
 
 <script lang="ts" setup>
 import { Task } from '../models/Task'
-import { DateTime } from 'luxon'
 import HorizontalScrolling from './HorizontalScrolling.vue'
-import Popup from './Popup.vue'
-import Tag from './Tag.vue'
+import Chip from './Chip.vue'
+import DatePickerDialog from './DatePickerDialog.vue'
 
 defineProps<{ task: Task }>()
 </script>

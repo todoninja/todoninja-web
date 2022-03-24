@@ -1,8 +1,8 @@
 bases:
-  - ../preview
+    - ../preview
 
 patchesJson6902:
-  - target:
-      kind: Ingress
-      name: todoninja-app
-    path: url-patch.yaml
+    - target:
+          kind: Ingress
+          name: parchment-app
+      path: url-patch.yaml

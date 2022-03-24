@@ -1,5 +1,6 @@
 <template>
     <div class="px-8 min-h-screen grid grid-rows-[auto_1fr] mb-32 text-on-background">
+        <notification-bar-color :color="scrolled ? 'surface-2' : 'surface'" />
         <div
             :class="`grid grid-cols-[auto_1fr_auto] -mx-8 ${
                 scrolled ? 'bg-surface-2' : 'bg-surface'
@@ -137,6 +138,7 @@ import ListNavigationDrawerItems from '../components/ListNavigationDrawerItems.v
 import TextButton from '../components/TextButton.vue'
 import EditListDialog from '../components/EditListDialog.vue'
 import FloatingActionButton from '../components/FloatingActionButton.vue'
+import NotificationBarColor from '../NotificationBarColor.vue'
 
 const selectedListId = ref<number | null | undefined>(null)
 const list = await asyncRef(async () => {

@@ -1,20 +1,17 @@
 <template>
     <div class="min-h-screen">
-        <div class="grid grid-cols-[auto_1fr_auto] gap-4 items-center p-4 bg-surface text-on-surface h-16">
-            <i
-                @click="$router.back()"
-                class="hero outline arrow-left clickable-bg -m-4 p-4 text-lg text-on-surface"
-            ></i>
-            <div></div>
-            <TaskOptionsMenu :task="task">
-                <template #default="{ open }">
-                    <i
-                        @click="open($event)"
-                        class="hero dots-vertical outline p-4 -m-4 clickable-bg rounded-full text-on-surface-variant"
-                    ></i>
-                </template>
-            </TaskOptionsMenu>
-        </div>
+        <TopAppBar>
+            <template #right>
+                <TaskOptionsMenu :task="task">
+                    <template #default="{ open }">
+                        <i
+                            @click="open($event)"
+                            class="hero dots-vertical outline p-4 -m-4 clickable-bg rounded-full text-on-surface-variant"
+                        ></i>
+                    </template>
+                </TaskOptionsMenu>
+            </template>
+        </TopAppBar>
         <div class="grid grid-cols-[auto_1fr] gap-4 items-center text-xl p-4 bg-surface">
             <DoneCheckbox :value="task.done" @input="task.update({ done: $event })" />
             <input
@@ -40,6 +37,7 @@ import { asyncRef } from '../asyncRef'
 import TaskOptionsMenu from '../components/TaskMenu.vue'
 import DeadlineIndicator from '../components/DeadlineIndicator.vue'
 import TaskActions from '../components/TaskActions.vue'
+import TopAppBar from '../components/TopAppBar.vue'
 
 const props = defineProps<{ id: number }>()
 const input = ref<HTMLInputElement | null>(null)

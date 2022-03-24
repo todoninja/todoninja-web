@@ -1,4 +1,4 @@
-const { tailwindPlugin: mdTailwindPlugin, colors: mdColors } = require('./packages/material-you')
+const { colors: mdColors } = require('./packages/material-you')
 
 module.exports = {
     content: ['./index.html', './src/**/*.vue'],
@@ -9,5 +9,4 @@ module.exports = {
             },
         },
     },
-    plugins: [mdTailwindPlugin()],
 }

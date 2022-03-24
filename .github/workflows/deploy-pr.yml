@@ -4,9 +4,7 @@ on:
 
 jobs:
     deploy_pr:
-        environment: production
         runs-on: ubuntu-latest
-        needs: build
         if: ${{ github.event.issue.pull_request }}
         steps:
             - run: echo "Hello PR Comment"

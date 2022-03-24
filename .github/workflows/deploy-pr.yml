@@ -5,6 +5,6 @@ on:
 jobs:
     deploy_pr:
         runs-on: ubuntu-latest
-        if: ${{ github.event.issue.pull_request && github.actor == "sebastiandittrich" && github.event.issue_comment.comment == "/deploy" }}
+        if: ${{ github.event.issue.pull_request && github.actor == 'sebastiandittrich' && github.event.issue_comment.comment == '/deploy' }}
         steps:
             - run: echo "Hello PR Comment ${{github.actor}} ${{github.repository_owner}}"

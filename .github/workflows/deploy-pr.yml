@@ -7,4 +7,4 @@ jobs:
         runs-on: ubuntu-latest
         if: ${{ github.event.issue.pull_request }}
         steps:
-            - run: echo "Hello PR Comment ${{ github.actor }} ${{ github.event.issue_comment }}"
+            - run: echo "Hello PR Comment ${{ github.actor }} ${{ toJSON(github.event) }}"

@@ -6,8 +6,6 @@ jobs:
     build:
         runs-on: ubuntu-latest
         if: ${{ github.event.issue.pull_request && github.actor == 'sebastiandittrich' && github.event.comment.body == '/deploy' }}
-        steps:
-            runs-on: ubuntu-latest
         permissions:
             contents: read
             packages: write

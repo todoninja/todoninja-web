@@ -39,7 +39,7 @@ export class BaseModel extends vueModel(OpaqueModel) {
 
     clone() {
         const clone = (this.constructor as typeof BaseModel).$fromRow({})
-        clone.$setRow(this.$getRow(), { raw: true })
+        ;(clone as any).$setRow(this.$getRow(), { raw: true })
         return clone
     }
 }

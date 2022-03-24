@@ -1,6 +1,6 @@
 <template>
     <DeadlinePickerPopup v-slot="{ open }" :task="task">
-        <div v-if="task.deadlineAt" class="flex flex-row items-center text-sm px-6 text-gray-400">
+        <div v-if="task.deadlineAt" class="flex flex-row items-center text-sm px-6 text-outline">
             <i
                 class="hero flag solid"
                 :class="{

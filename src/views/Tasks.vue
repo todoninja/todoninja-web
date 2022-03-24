@@ -134,10 +134,8 @@ import Dialog from '../components/Dialog.vue'
 import Menu from '../components/Menu.vue'
 import MenuItem from '../components/MenuItem.vue'
 import ListNavigationDrawerItems from '../components/ListNavigationDrawerItems.vue'
-import EditListForm from '../components/EditListForm.vue'
 import TextButton from '../components/TextButton.vue'
 import EditListDialog from '../components/EditListDialog.vue'
-import MenuItem1 from '../components/MenuItem.vue'
 import FloatingActionButton from '../components/FloatingActionButton.vue'
 
 const selectedListId = ref<number | null | undefined>(null)

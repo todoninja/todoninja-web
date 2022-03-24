@@ -16,7 +16,7 @@
                 />
                 <TextButton @click="save().then(close)">Create</TextButton>
             </div>
-            <!-- <TaskActions :task="task" class="mt-4 -mx-8 px-8" /> -->
+            <TaskActions :task="task" class="mt-4 -mx-8 px-8" />
         </template>
     </Dialog>
 </template>

@@ -6,6 +6,7 @@
         >
             <template v-slot="{ open }">
                 <Chip
+                    :type="task.postponedUntil ? 'input' : 'assist'"
                     @click="open"
                     icon="chevron-double-right"
                     :removable="task.postponedUntil != null"

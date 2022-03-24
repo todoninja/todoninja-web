@@ -3,8 +3,27 @@ on:
         types: [created]
 
 jobs:
-    deploy_pr:
+    build:
         runs-on: ubuntu-latest
-        if: ${{ github.event.issue.pull_request }}
+        if: ${{ github.event.issue.pull_request && github.actor == 'sebastiandittrich' && github.event.comment.body == '/deploy' }}
         steps:
-            - run: echo "Hello PR Comment ${{ github.actor }} ${{ github.event.comment.body }}"
+            runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: 16
+            - name: Log in to the Container registry
+              uses: docker/login-action@v1
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@v3
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
